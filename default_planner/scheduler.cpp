@@ -45,6 +45,7 @@ void schedule_plan(int time_limit, std::vector<int> & proposed_schedule,  Shared
         min_task_makespan = INT_MAX;
         count = 0;
 
+        // pop a free task to an agent
         // iterate over all the unassigned tasks to find the one with the minimum makespan for agent i
         for (int t_id : free_tasks)
         {
