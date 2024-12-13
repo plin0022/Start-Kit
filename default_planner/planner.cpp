@@ -163,6 +163,7 @@ namespace DefaultPlanner{
             
         }
 
+        // make sure every agent has a guide path
         // compute the congestion minimised guide path for the agents that need guide path update
         for (int i = 0; i < env->num_of_agents;i++){
             if (std::chrono::steady_clock::now() >end_time)
@@ -174,6 +175,7 @@ namespace DefaultPlanner{
             }
         }
 
+        // optimize the traffic flow, remove current and replan another to see if there is a better one
         // iterate and recompute the guide path to optimise traffic flow
         std::unordered_set<int> updated;
         frank_wolfe(trajLNS, updated,end_time);

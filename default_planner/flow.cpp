@@ -11,7 +11,8 @@ namespace DefaultPlanner{
 std::mt19937 g(0);
 
 
-//remove flow for each location's outgoing edge according to the traj
+// remove flow for each location's outgoing edge according to the traj, only remove flow costs but not delete the traj
+// of an agent
 void remove_traj(TrajLNS& lns, int agent){
     lns.soc -= lns.trajs[agent].size() - 1;
     if (lns.trajs[agent].size() <= 1){
@@ -33,6 +34,7 @@ void remove_traj(TrajLNS& lns, int agent){
     }
 }
 
+// add weight to the edges but does not change any trajs
 void add_traj(TrajLNS& lns, int agent){
 
     //update last replan time for agent
