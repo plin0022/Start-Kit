@@ -22,7 +22,7 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
         h = manhattanDistance(start,goal,env);
     else
         h = get_heuristic(ht,env, start, ns);
-    
+
 
     
     s_node* root = mem.generate_node(start,0, h,0,0,0);
