@@ -1,57 +1,43 @@
 //
 // Created by lpq66 on 18/12/2024.
 // Reference https://github.com/Jiaoyang-Li/CBSH2-RTC
-bool MDD::buildMDD(const ConstraintTable& ct, int num_of_levels, const SingleAgentSolver* _solver)
+#include "MDD.h"
+
+
+bool MDD::buildMDD(const ConstraintTable& ct, int num_of_levels, const SingleAgentSolver* _solver, int start, int goal)
 {
-    this->solver = _solver;
-    auto root = new MDDNode(solver->start_location, nullptr); // Root
-    root->cost = num_of_levels - 1;
+    auto root = new MDDNode(start, nullptr); // Root
     std::queue<MDDNode*> open;
     list<MDDNode*> closed;
+    std::unordered_set<int> visited;
     open.push(root);
-    closed.push_back(root);
-    levels.resize(num_of_levels);
+    visited.insert(root->location);
+
+
     while (!open.empty())
     {
         auto curr = open.front();
         open.pop();
-        // Here we suppose all edge cost equals 1
-        if (curr->level == num_of_levels - 1)
+        closed.push_back(curr);
+
+
+        list<int> next_locations = solver->getNextLocations(curr->location);  // only need the nodes on traffic costs optimal paths
+
+        for (int next_location : next_locations)
         {
-            levels.back().push_back(curr);
-            assert(open.empty());
-            break;
-        }
-        // We want (g + 1)+h <= f = numOfLevels - 1, so h <= numOfLevels - g - 2. -1 because it's the bound of the children.
-        int heuristicBound = num_of_levels - curr->level - 2;
-        list<int> next_locations = solver->getNextLocations(curr->location);
-        for (int next_location : next_locations) // Try every possible move. We only add backward edges in this step.
-        {
-            if (solver->my_heuristic[next_location] <= heuristicBound &&
-                !ct.constrained(next_location, curr->level + 1) &&
-                !ct.constrained(curr->location, next_location, curr->level + 1)) // valid move
+            // the node has been added into open before and has different parent
+            if ((visited.find(next_location) != visited.end()) && (different parents))
             {
-                auto child = closed.rbegin();
-                bool find = false;
-                for (; child != closed.rend() && ((*child)->level == curr->level + 1); ++child)
-                {
-                    if ((*child)->location == next_location) // If the child node exists
-                    {
-                        (*child)->parents.push_back(curr); // then add corresponding parent link and child link
-                        find = true;
-                        break;
-                    }
-                }
-                if (!find) // Else generate a new mdd node
-                {
-                    auto childNode = new MDDNode(next_location, curr);
-                    childNode->cost = num_of_levels - 1;
-                    open.push(childNode);
-                    closed.push_back(childNode);
-                }
+                add parent into parents;
+            }
+            else
+            {
+                auto childNode = new MDDNode(next_location, curr);
+                open.push(childNode);
             }
         }
     }
+
     assert(levels.back().size() == 1);
 
     // Backward
