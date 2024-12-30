@@ -35,6 +35,10 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
 
     pqueue_min_of open;
     re_of re;
+    std::unordered_map<int, s_node*> closed;
+    bool g_found_flag = false;
+    int f_min = 0;
+
 
     open.push(root);
 
@@ -51,12 +55,31 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
 
     while (open.size() > 0){
         s_node* curr = open.pop();
+        closed[curr->id] = curr;
         curr->close();
 
-        if (curr->id == goal){
+//        if (curr->id == goal){
+//            goal_node = curr;
+//            break;
+//        }
+
+        if (curr->id == goal && !g_found_flag){
             goal_node = curr;
-            break;
+            g_found_flag = true;
+            f_min = curr->get_all_vertex_flow() + curr->get_op_flow() + curr->get_f();
         }
+
+        if (g_found_flag)
+        {
+            int curr_tf = curr->get_all_vertex_flow() + curr->get_op_flow() + curr->get_f();
+            if (curr_tf < f_min)
+            {
+                volatile int xxxx_test = 1010;
+                int xxx = 12312;
+            }
+            if (curr_tf > f_min) break;
+        }
+
         expanded++;
         getNeighborLocs(ns,neighbors,curr->id);
         
@@ -83,15 +106,17 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
 
             diff = next - curr->id;
             d = get_d(diff,env);
-            if (curr->parent != nullptr){
-                p_diff = curr->id - curr->parent->id;
-                p_d = get_d(p_diff,env);
-                if (p_d!=d)
-                    tie_breaker = 0.1;
-                else
-                    tie_breaker = 0;
-                //tie breaking on prefering moving forward
-            }
+
+
+//            if (curr->parent != nullptr){
+//                p_diff = curr->id - curr->parent->id;
+//                p_d = get_d(p_diff,env);
+//                if (p_d!=d)
+//                    tie_breaker = 0.1;
+//                else
+//                    tie_breaker = 0;
+//                //tie breaking on prefering moving forward
+//            }
 
 
             temp_op = ( (flow[curr->id].d[d]+1) * flow[next].d[(d+2)%4]);///( ( (flow[curr->id].d[d]+1) + flow[next].d[(d+2)%4]));
