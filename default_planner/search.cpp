@@ -74,10 +74,18 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
             int curr_tf = curr->get_all_vertex_flow() + curr->get_op_flow() + curr->get_f();
             if (curr_tf < f_min)
             {
-                volatile int xxxx_test = 1010;
-                int xxx = 12312;
+                std::cout << "error in astar: smaller cost error" << std::endl;
+                assert(false);
+                exit(1);
             }
-            if (curr_tf > f_min) break;
+            if (curr_tf == f_min)
+            {
+                std::cout << "multiple " << std::endl;
+            }
+            if (curr_tf > f_min)
+            {
+                break;
+            }
         }
 
         expanded++;
@@ -132,10 +140,10 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
         
             all_vertex_flow+= (temp_vertex-1) /2;
 
-            p_diff = 0;
-            if (curr->parent != nullptr){
-                p_diff = curr->id - curr->parent->id;
-            }
+//            p_diff = 0;
+//            if (curr->parent != nullptr){
+//                p_diff = curr->id - curr->parent->id;
+//            }
 
             op_flow += curr->op_flow; //op_flow is contra flow
             all_vertex_flow += curr->all_vertex_flow;
@@ -146,7 +154,7 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
 
             if (!mem.has_node(next)){
                 s_node* next_node = mem.generate_node(next,cost,h,op_flow, depth,all_vertex_flow);
-                next_node->parent = curr;
+                next_node->parents[curr->id] = curr;
                 next_node->tie_breaker = tie_breaker;
                 open.push(next_node);
                 generated++;
@@ -155,14 +163,21 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
                 s_node* existing = mem.get_node(next);
 
                 if (!existing->is_closed()){
-                    if (re(temp_node,*existing)){
-                        existing->g = cost;
-                        existing->parent = curr;
-                        existing->depth = depth;
-                        existing->tie_breaker = tie_breaker;
-                        existing->set_all_flow(op_flow,  all_vertex_flow);
-                        open.decrease_key(existing);
+                    // the parent in the map
+                    if (existing->parents.find(curr->id) != existing->parents.end())
+                    {
+                        // existing parent with better cost
+                        if (re(temp_node,*existing)){
+                            existing->g = cost;
+                            existing->parents.clear();
+                            existing->parents[curr->id] = curr;
+                            existing->depth = depth;
+                            existing->tie_breaker = tie_breaker;
+                            existing->set_all_flow(op_flow,  all_vertex_flow);
+                            open.decrease_key(existing);
+                        }
                     }
+
                 }
                 else{
 
