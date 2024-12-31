@@ -48,7 +48,7 @@ struct s_node
         all_vertex_flow = 0;
         closed = false;
         depth = 0;
-        parent = nullptr;
+        parents.clear();
         tie_breaker = 0;
 
     }

@@ -55,18 +55,15 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
 
     while (open.size() > 0){
         s_node* curr = open.pop();
-        closed[curr->id] = curr;
-        curr->close();
 
-//        if (curr->id == goal){
-//            goal_node = curr;
-//            break;
-//        }
 
         if (curr->id == goal && !g_found_flag){
             goal_node = curr;
             g_found_flag = true;
             f_min = curr->get_all_vertex_flow() + curr->get_op_flow() + curr->get_f();
+            closed[curr->id] = curr;
+            curr->close();
+            continue;  // do not expand goal node
         }
 
         if (g_found_flag)
@@ -80,7 +77,7 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
             }
             if (curr_tf == f_min)
             {
-                std::cout << "multiple " << std::endl;
+                std::cout << "another potential node on traffic optimal path found" << std::endl;
             }
             if (curr_tf > f_min)
             {
@@ -88,9 +85,13 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
             }
         }
 
+
+        closed[curr->id] = curr;
+        curr->close();
         expanded++;
         getNeighborLocs(ns,neighbors,curr->id);
-        
+
+
         for (int i=0; i<4; i++){
             int next = neighbors[i];
             if (next == -1){
@@ -116,17 +117,6 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
             d = get_d(diff,env);
 
 
-//            if (curr->parent != nullptr){
-//                p_diff = curr->id - curr->parent->id;
-//                p_d = get_d(p_diff,env);
-//                if (p_d!=d)
-//                    tie_breaker = 0.1;
-//                else
-//                    tie_breaker = 0;
-//                //tie breaking on prefering moving forward
-//            }
-
-
             temp_op = ( (flow[curr->id].d[d]+1) * flow[next].d[(d+2)%4]);///( ( (flow[curr->id].d[d]+1) + flow[next].d[(d+2)%4]));
 
             //all vertex flow
@@ -140,10 +130,6 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
         
             all_vertex_flow+= (temp_vertex-1) /2;
 
-//            p_diff = 0;
-//            if (curr->parent != nullptr){
-//                p_diff = curr->id - curr->parent->id;
-//            }
 
             op_flow += curr->op_flow; //op_flow is contra flow
             all_vertex_flow += curr->all_vertex_flow;
@@ -151,22 +137,28 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
             s_node temp_node(next,cost,h,op_flow, depth);
             temp_node.tie_breaker = tie_breaker;
             temp_node.set_all_flow(op_flow,  all_vertex_flow);
+            int traffic_fcost = temp_node.get_op_flow() + temp_node.get_all_vertex_flow() + temp_node.get_f();
 
-            if (!mem.has_node(next)){
-                s_node* next_node = mem.generate_node(next,cost,h,op_flow, depth,all_vertex_flow);
-                next_node->parents[curr->id] = curr;
-                next_node->tie_breaker = tie_breaker;
-                open.push(next_node);
-                generated++;
-            }
-            else{ 
-                s_node* existing = mem.get_node(next);
 
-                if (!existing->is_closed()){
-                    // the parent in the map
-                    if (existing->parents.find(curr->id) != existing->parents.end())
-                    {
-                        // existing parent with better cost
+            // no f_min value
+            if (!g_found_flag)
+            {
+                // the node has never been visited before
+                if (!mem.has_node(next)){
+                    s_node* next_node = mem.generate_node(next,cost,h,op_flow, depth,all_vertex_flow);
+                    next_node->parents[curr->id] = curr;
+                    next_node->tie_breaker = tie_breaker;
+                    open.push(next_node);
+                    generated++;
+                }
+
+                // the node has been visited before
+                else{
+                    s_node* existing = mem.get_node(next);
+
+                    // the node is in open
+                    if (!existing->is_closed()){
+                        // if the cost is better
                         if (re(temp_node,*existing)){
                             existing->g = cost;
                             existing->parents.clear();
@@ -176,18 +168,101 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
                             existing->set_all_flow(op_flow,  all_vertex_flow);
                             open.decrease_key(existing);
                         }
+
+                        // the same cost
+                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
+                            traffic_fcost)
+                        {
+                            // new parent
+                            if (existing->parents.find(curr->id) == existing->parents.end())
+                                existing->parents[curr->id] = curr;
+                        }
                     }
 
+                    // the node is in closed
+                    else{
+                        if (re(temp_node,*existing)){
+                            std::cout << "error in astar: re-expansion" << std::endl;
+                            assert(false);
+                            exit(1);
+                        }
+
+                        // the same cost
+                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
+                            traffic_fcost)
+                        {
+                            // new parent
+                            if (closed[existing->id]->parents.find(curr->id) == closed[existing->id]->parents.end())
+                                closed[existing->id]->parents[curr->id] = curr;
+                        }
+                    }
                 }
-                else{
+            }
 
-                    if (re(temp_node,*existing)){ 
-                        std::cout << "error in astar: re-expansion" << std::endl;
-                        assert(false);
-                        exit(1);
+            // f_min value found
+            else
+            {
+                if (traffic_fcost < f_min)
+                {
+                    std::cout << "error in astar: not an optimal path" << std::endl;
+                    assert(false);
+                    exit(1);
+                }
+
+                if (traffic_fcost > f_min)
+                    continue;
+
+
+                // the node satisfies f_traffic == f_min
+                // the node has never been visited before
+                if (!mem.has_node(next)){
+                    s_node* next_node = mem.generate_node(next,cost,h,op_flow, depth,all_vertex_flow);
+                    next_node->parents[curr->id] = curr;
+                    next_node->tie_breaker = tie_breaker;
+                    open.push(next_node);
+                    generated++;
+                }
+
+                // the node has been visited before
+                else{
+                    s_node* existing = mem.get_node(next);
+
+                    if (!existing->is_closed()){
+                        // if the cost is better
+                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) >
+                            f_min)
+                        {
+                            existing->g = cost;
+                            existing->parents.clear();
+                            existing->parents[curr->id] = curr;
+                            existing->depth = depth;
+                            existing->tie_breaker = tie_breaker;
+                            existing->set_all_flow(op_flow,  all_vertex_flow);
+                            open.decrease_key(existing);
+                        }
+
+                        // the same cost
+                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
+                            f_min)
+                        {
+                            // new parent
+                            if (existing->parents.find(curr->id) == existing->parents.end())
+                                existing->parents[curr->id] = curr;
+                        }
                     }
 
-                } 
+                    // the node is in closed
+                    else{
+                        // the same cost
+                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
+                            f_min)
+                        {
+                            // new parent
+                            if (closed[existing->id]->parents.find(curr->id) == closed[existing->id]->parents.end())
+                                closed[existing->id]->parents[curr->id] = curr;
+                        }
+                    }
+                }
             }
         }
             
@@ -206,7 +281,10 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
     s_node* curr = goal_node;
     for (int i=goal_node->depth; i>=0; i--){
         traj[i] = curr->id;
-        curr = curr->parent;
+        auto it = curr->parents.begin();
+        if (it != curr->parents.end()) {
+            curr = it->second;
+        }
     }
 
     return *goal_node;
