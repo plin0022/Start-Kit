@@ -15,6 +15,7 @@
 
 #include "SharedEnv.h"
 #include "ActionModel.h"
+#include "search_node.h"
 
 namespace DefaultPlanner{
 
@@ -38,6 +39,8 @@ namespace DefaultPlanner{
 	};
 
 	typedef std::vector<int> Traj;
+
+//    typedef std::vector<s_node*> Traj;
 
 	struct PIBT_C{
 		int location;

@@ -77,7 +77,7 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
             }
             if (curr_tf == f_min)
             {
-                std::cout << "another potential node on traffic optimal path found" << std::endl;
+//                std::cout << "another potential node on traffic optimal path found" << std::endl;
             }
             if (curr_tf > f_min)
             {
@@ -204,14 +204,56 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
         exit(1);
     }
 
-    traj.resize(goal_node->depth+1);
-    s_node* curr = goal_node;
-    for (int i=goal_node->depth; i>=0; i--){
-        traj[i] = curr->id;
-        auto it = curr->parents.begin();
-        if (it != curr->parents.end()) {
-            curr = it->second;
+    // backward to retrieve all the nodes on optimal paths
+    std::unordered_map<int, s_node*> optimal_traj;
+    std::queue<s_node*> nodes;
+    nodes.push(closed[goal]);
+
+    while (!nodes.empty())
+    {
+        s_node* curr_node = nodes.front();
+        nodes.pop();
+        if (optimal_traj.find(curr_node->id) == optimal_traj.end())
+            optimal_traj[curr_node->id] = curr_node;
+        else
+            continue;
+
+//        std::cout << curr_node->id << std::endl;
+
+
+        for (const auto& pair : curr_node->parents) {
+            nodes.push(closed[pair.first]);
         }
+    }
+
+
+    if (optimal_traj.size() > closed.size())
+    {
+        std::cout << "error in astar: no path found "<< start<<","<<goal << std::endl;
+        assert(false);
+        exit(1);
+    }
+
+
+    std::vector<int> temp_traj;
+    std::stack<s_node*> stack_nodes;
+    stack_nodes.push(optimal_traj[goal]);
+    while (!stack_nodes.empty())
+    {
+        s_node* curr_node = stack_nodes.top();
+        stack_nodes.pop();
+        temp_traj.push_back(curr_node->id);
+        auto it = curr_node->parents.begin();
+        if (it != curr_node->parents.end()) {
+            stack_nodes.push(it->second);
+        }
+    }
+
+
+    int n_size = temp_traj.size();
+    traj.resize(n_size);
+    for (int i = 0; i < n_size; i++){
+        traj[i] = temp_traj[n_size - 1 - i];
     }
 
     return *goal_node;
