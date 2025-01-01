@@ -265,9 +265,6 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
                 }
             }
         }
-            
-
-          
     }
 
 
