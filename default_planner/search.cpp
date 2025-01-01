@@ -91,7 +91,7 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
         expanded++;
         getNeighborLocs(ns,neighbors,curr->id);
 
-
+        // build connections between children and the current node
         for (int i=0; i<4; i++){
             int next = neighbors[i];
             if (next == -1){
@@ -140,127 +140,57 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
             int traffic_fcost = temp_node.get_op_flow() + temp_node.get_all_vertex_flow() + temp_node.get_f();
 
 
-            // no f_min value
-            if (!g_found_flag)
-            {
-                // the node has never been visited before
-                if (!mem.has_node(next)){
-                    s_node* next_node = mem.generate_node(next,cost,h,op_flow, depth,all_vertex_flow);
-                    next_node->parents[curr->id] = curr;
-                    next_node->tie_breaker = tie_breaker;
-                    open.push(next_node);
-                    generated++;
-                }
-
-                // the node has been visited before
-                else{
-                    s_node* existing = mem.get_node(next);
-
-                    // the node is in open
-                    if (!existing->is_closed()){
-                        // if the cost is better
-                        if (re(temp_node,*existing)){
-                            existing->g = cost;
-                            existing->parents.clear();
-                            existing->parents[curr->id] = curr;
-                            existing->depth = depth;
-                            existing->tie_breaker = tie_breaker;
-                            existing->set_all_flow(op_flow,  all_vertex_flow);
-                            open.decrease_key(existing);
-                        }
-
-                        // the same cost
-                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
-                            traffic_fcost)
-                        {
-                            // new parent
-                            if (existing->parents.find(curr->id) == existing->parents.end())
-                                existing->parents[curr->id] = curr;
-                        }
-                    }
-
-                    // the node is in closed
-                    else{
-                        if (re(temp_node,*existing)){
-                            std::cout << "error in astar: re-expansion" << std::endl;
-                            assert(false);
-                            exit(1);
-                        }
-
-                        // the same cost
-                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
-                            traffic_fcost)
-                        {
-                            // new parent
-                            if (closed[existing->id]->parents.find(curr->id) == closed[existing->id]->parents.end())
-                                closed[existing->id]->parents[curr->id] = curr;
-                        }
-                    }
-                }
+            // the node has never been visited before
+            if (!mem.has_node(next)){
+                s_node* next_node = mem.generate_node(next,cost,h,op_flow, depth,all_vertex_flow);
+                next_node->parents[curr->id] = curr;
+                next_node->tie_breaker = tie_breaker;
+                open.push(next_node);
+                generated++;
             }
 
-            // f_min value found
-            else
-            {
-                if (traffic_fcost < f_min)
-                {
-                    std::cout << "error in astar: not an optimal path" << std::endl;
-                    assert(false);
-                    exit(1);
-                }
+            // the node has been visited before
+            else{
+                s_node* existing = mem.get_node(next);
 
-                if (traffic_fcost > f_min)
-                    continue;
-
-
-                // the node satisfies f_traffic == f_min
-                // the node has never been visited before
-                if (!mem.has_node(next)){
-                    s_node* next_node = mem.generate_node(next,cost,h,op_flow, depth,all_vertex_flow);
-                    next_node->parents[curr->id] = curr;
-                    next_node->tie_breaker = tie_breaker;
-                    open.push(next_node);
-                    generated++;
-                }
-
-                // the node has been visited before
-                else{
-                    s_node* existing = mem.get_node(next);
-
-                    if (!existing->is_closed()){
-                        // if the cost is better
-                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) >
-                            f_min)
-                        {
-                            existing->g = cost;
-                            existing->parents.clear();
-                            existing->parents[curr->id] = curr;
-                            existing->depth = depth;
-                            existing->tie_breaker = tie_breaker;
-                            existing->set_all_flow(op_flow,  all_vertex_flow);
-                            open.decrease_key(existing);
-                        }
-
-                        // the same cost
-                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
-                            f_min)
-                        {
-                            // new parent
-                            if (existing->parents.find(curr->id) == existing->parents.end())
-                                existing->parents[curr->id] = curr;
-                        }
+                // the node is in open
+                if (!existing->is_closed()){
+                    // if the cost is better
+                    if (re(temp_node,*existing)){
+                        existing->g = cost;
+                        existing->parents.clear();
+                        existing->parents[curr->id] = curr;
+                        existing->depth = depth;
+                        existing->tie_breaker = tie_breaker;
+                        existing->set_all_flow(op_flow,  all_vertex_flow);
+                        open.decrease_key(existing);
                     }
 
-                    // the node is in closed
-                    else{
-                        // the same cost
-                        if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
-                            f_min)
-                        {
-                            // new parent
-                            if (closed[existing->id]->parents.find(curr->id) == closed[existing->id]->parents.end())
-                                closed[existing->id]->parents[curr->id] = curr;
-                        }
+                    // the same cost
+                    if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
+                        traffic_fcost)
+                    {
+                        // new parent
+                        if (existing->parents.find(curr->id) == existing->parents.end())
+                            existing->parents[curr->id] = curr;
+                    }
+                }
+
+                // the node is in closed
+                else{
+                    if (re(temp_node,*existing)){
+                        std::cout << "error in astar: re-expansion" << std::endl;
+                        assert(false);
+                        exit(1);
+                    }
+
+                    // the same cost
+                    if ((existing->get_op_flow() + existing->get_all_vertex_flow() + existing->get_f()) ==
+                        traffic_fcost)
+                    {
+                        // new parent
+                        if (closed[existing->id]->parents.find(curr->id) == closed[existing->id]->parents.end())
+                            closed[existing->id]->parents[curr->id] = curr;
                     }
                 }
             }
