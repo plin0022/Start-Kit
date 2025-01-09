@@ -18,6 +18,7 @@ struct s_node
     double tie_breaker = 0;
 //    s_node* parent = nullptr;
     std::unordered_map<int, s_node*> parents;
+    std::unordered_map<int, s_node*> children;
 
     unsigned int priority;
 
@@ -49,6 +50,7 @@ struct s_node
         closed = false;
         depth = 0;
         parents.clear();
+        children.clear();
         tie_breaker = 0;
 
     }

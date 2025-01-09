@@ -22,7 +22,6 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
         h = manhattanDistance(start,goal,env);
     else
         h = get_heuristic(ht,env, start, ns);
-    
 
     
     s_node* root = mem.generate_node(start,0, h,0,0,0);
@@ -74,10 +73,6 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
                 std::cout << "error in astar: smaller cost error" << std::endl;
                 assert(false);
                 exit(1);
-            }
-            if (curr_tf == f_min)
-            {
-//                std::cout << "another potential node on traffic optimal path found" << std::endl;
             }
             if (curr_tf > f_min)
             {
@@ -171,8 +166,17 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
                         traffic_fcost)
                     {
                         // new parent
+//                        if (existing->parents.find(curr->id) == existing->parents.end())
+//                            existing->parents[curr->id] = curr;
                         if (existing->parents.find(curr->id) == existing->parents.end())
+                        {
                             existing->parents[curr->id] = curr;
+                            if (curr->depth != existing->depth - 1)
+                            {
+                                std::cout << "how are u" <<std::endl;
+                            }
+                        }
+
                     }
                 }
 
@@ -191,6 +195,7 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
                         // new parent
                         if (closed[existing->id]->parents.find(curr->id) == closed[existing->id]->parents.end())
                             closed[existing->id]->parents[curr->id] = curr;
+
                     }
                 }
             }
@@ -209,6 +214,7 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
     std::queue<s_node*> nodes;
     nodes.push(closed[goal]);
 
+    
     while (!nodes.empty())
     {
         s_node* curr_node = nodes.front();
@@ -218,11 +224,11 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
         else
             continue;
 
-//        std::cout << curr_node->id << std::endl;
 
 
         for (const auto& pair : curr_node->parents) {
             nodes.push(closed[pair.first]);
+            closed[pair.first]->children[curr_node->id] = curr_node;
         }
     }
 
