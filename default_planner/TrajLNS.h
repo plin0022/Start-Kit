@@ -61,7 +61,7 @@ class TrajLNS{
     std::vector<std::pair<int,int>> deviation_agents;
 
     std::vector<Int4> flow;
-    std::vector<std::vector<std::array<bool, 4>>> constraint_flow;
+    std::vector<std::vector<std::pair<bool, std::array<bool, 4>>>> constraint_flow;
 
     std::vector<HeuristicTable>& heuristics;
     std::vector<Dist2Path> traj_dists;
@@ -88,7 +88,9 @@ class TrajLNS{
         flow(env->map.size(),Int4({0,0,0,0})), heuristics(heuristics),
         constraint_flow(
                 env->max_simulation_time,
-                std::vector<std::array<bool, 4>>(env->map.size(), {false, false, false, false})
+                std::vector<std::pair<bool, std::array<bool, 4>>>(
+                        env->map.size(), {false, {false, false, false, false}}
+                )
         ),
         traj_dists(env->num_of_agents),goal_nodes(env->num_of_agents),
         fw_metrics(env->num_of_agents),neighbors(neighbors){
