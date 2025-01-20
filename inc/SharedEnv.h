@@ -19,6 +19,7 @@ public:
     std::string map_name;
     std::vector<int> map;
     std::string file_storage_path;
+    int max_simulation_time;
 
     // goal locations for each agent
     // each task is a pair of <goal_loc, reveal_time>

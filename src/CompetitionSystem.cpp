@@ -133,9 +133,11 @@ void BaseSystem::simulate(int simulation_time)
 {
     //init logger
     //Logger* log = new Logger();
+    this->simulation_time = simulation_time;
+
+
     initialize();
 
-    this->simulation_time = simulation_time;
 
     vector<Action> all_wait_actions(num_of_agents, Action::NA);
 
@@ -197,6 +199,7 @@ void BaseSystem::initialize()
     env->rows = map.rows;
     env->cols = map.cols;
     env->map = map.map;
+    env->max_simulation_time = simulation_time;
 
     
     // // bool succ = load_records(); // continue simulating from the records
