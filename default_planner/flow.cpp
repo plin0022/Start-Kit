@@ -17,7 +17,7 @@ void remove_traj(TrajLNS& lns, int agent){
     if (lns.trajs[agent].size() <= 1){
         return;
     }
-    int loc, prev_loc, diff, d, to;
+    int loc, prev_loc, diff, d, rev_d, to;
 
     to = lns.trajs[agent].size();
 
@@ -26,9 +26,17 @@ void remove_traj(TrajLNS& lns, int agent){
         prev_loc = lns.trajs[agent][j-1];
         diff = loc - prev_loc;
         d = get_d(diff, lns.env);
+        rev_d = (d < 2) ? (d + 2) : (d - 2);
 
 
         lns.flow[prev_loc].d[d] -= 1;
+
+
+        // constraints
+        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j][loc].first = false;  // occupy vertex
+        // two opposite direction edges
+        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j - 1][prev_loc].second[d] = false;
+        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j - 1][loc].second[rev_d] = false;
 
     }
 }
@@ -42,14 +50,22 @@ void add_traj(TrajLNS& lns, int agent){
     if (lns.trajs[agent].size() <= 1){
         return;
     }
-    int loc, prev_loc, diff, d;
+    int loc, prev_loc, diff, d, rev_d;
     for (int j = 1; j < lns.trajs[agent].size(); j++){
         loc = lns.trajs[agent][j];
         prev_loc = lns.trajs[agent][j-1];
         diff = loc - prev_loc;
         d = get_d(diff, lns.env);
+        rev_d = (d < 2) ? (d + 2) : (d - 2);
 
         lns.flow[prev_loc].d[d] += 1;
+
+
+        // constraints
+        lns.constraint_flow[lns.env->curr_timestep + j][loc].first = true;  // occupy vertex
+        // two opposite direction edges
+        lns.constraint_flow[lns.env->curr_timestep + j - 1][prev_loc].second[d] = true;
+        lns.constraint_flow[lns.env->curr_timestep + j - 1][loc].second[rev_d] = true;
 
     }
 }
