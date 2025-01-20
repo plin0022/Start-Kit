@@ -15,6 +15,13 @@ namespace DefaultPlanner{
 s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
     HeuristicTable& ht, Traj& traj,
     MemoryPool& mem, int start, int goal, Neighbors* ns);
+
+
+// constraints table added version
+    s_node astar(SharedEnvironment* env, std::vector<std::vector<std::pair<bool, std::array<bool, 4>>>>& constraint_flow,
+                 std::vector<Int4>& flow,
+                 HeuristicTable& ht, Traj& traj,
+                 MemoryPool& mem, int start, int goal, Neighbors* ns);
 }
 
 #endif
