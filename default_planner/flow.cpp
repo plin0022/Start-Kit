@@ -160,7 +160,9 @@ void init_dist_table(TrajLNS& lns, int amount){
 void update_traj(TrajLNS& lns, int i){
     int start = lns.env->curr_states[i].location;
     int goal = lns.tasks[i];
-    lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal],
+                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+//    lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
     add_traj(lns,i);
     update_dist_2_path(lns,i);
 }
