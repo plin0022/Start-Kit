@@ -9,6 +9,7 @@ struct s_node
 {
     int label = 0;
     int id = -1; //also location, -1 indicated not generated yet.
+    int curr_timestep = 0;
     int g = 0;
     int h = 0;
     int op_flow = 0;
@@ -20,6 +21,8 @@ struct s_node
 
     unsigned int priority;
 
+    s_node(int id, int curr_timestep, int g, int h, int op_flow, int depth) : id(id), curr_timestep(curr_timestep),
+                                                                              g(g), h(h), op_flow(op_flow),depth(depth) {};
 
     s_node(int id, int g, int h, int op_flow, int depth) : id(id), g(g), h(h), op_flow(op_flow),depth(depth) {};
     s_node() = default;
