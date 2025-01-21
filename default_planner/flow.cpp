@@ -34,9 +34,7 @@ void remove_traj(TrajLNS& lns, int agent){
 
         // constraints
         lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j][loc].first = false;  // occupy vertex
-        // two opposite direction edges
-        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j - 1][prev_loc].second[d] = false;
-        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j - 1][loc].second[rev_d] = false;
+        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j - 1][prev_loc].second[d] = false;  // occupy edge
 
     }
 }
@@ -63,9 +61,7 @@ void add_traj(TrajLNS& lns, int agent){
 
         // constraints
         lns.constraint_flow[lns.env->curr_timestep + j][loc].first = true;  // occupy vertex
-        // two opposite direction edges
-        lns.constraint_flow[lns.env->curr_timestep + j - 1][prev_loc].second[d] = true;
-        lns.constraint_flow[lns.env->curr_timestep + j - 1][loc].second[rev_d] = true;
+        lns.constraint_flow[lns.env->curr_timestep + j - 1][prev_loc].second[d] = true;  // occupy edge
 
     }
 }
@@ -176,9 +172,12 @@ void init_dist_table(TrajLNS& lns, int amount){
 void update_traj(TrajLNS& lns, int i){
     int start = lns.env->curr_states[i].location;
     int goal = lns.tasks[i];
-    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal],
-                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-//    lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+//    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal],
+//                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+
+
+        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+
     add_traj(lns,i);
     update_dist_2_path(lns,i);
 }
