@@ -32,14 +32,16 @@ void remove_traj(TrajLNS& lns, int agent){
         lns.flow[prev_loc].d[d] -= 1;
 
 
+
 //        // constraints
 //        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j][loc].first = false;  // occupy vertex
 //        lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j - 1][prev_loc].second[d] = false;  // occupy edge
 
-        for (int k = 0; k < 1; k++)
+        for (int k = 0; k < lns.trajs[agent].size(); k++)
         {
             lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j + k][loc].first = false;  // occupy vertex
             lns.constraint_flow[lns.fw_metrics[agent].last_replan_t + j + k - 1][prev_loc].second[d] = false;  // occupy edge
+            lns.flow_with_time[lns.fw_metrics[agent].last_replan_t + j + k - 1][prev_loc].d[d] -= 1;
         }
 
     }
@@ -69,10 +71,11 @@ void add_traj(TrajLNS& lns, int agent){
 //        lns.constraint_flow[lns.env->curr_timestep + j][loc].first = true;  // occupy vertex
 //        lns.constraint_flow[lns.env->curr_timestep + j - 1][prev_loc].second[d] = true;  // occupy edge
 
-        for (int k = 0; k < 1; k++)
+        for (int k = 0; k < lns.trajs[agent].size(); k++)
         {
             lns.constraint_flow[lns.env->curr_timestep + j + k][loc].first = true;  // occupy vertex
             lns.constraint_flow[lns.env->curr_timestep + j + k - 1][prev_loc].second[d] = true;  // occupy edge
+            lns.flow_with_time[lns.env->curr_timestep + j + k - 1][prev_loc].d[d] += 1;
         }
     }
 }
@@ -185,8 +188,8 @@ void update_traj(TrajLNS& lns, int i){
     int goal = lns.tasks[i];
 
 
-    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal], lns.heuristics,
-                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+//    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal], lns.heuristics,
+//                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
 //        astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal],
@@ -196,6 +199,9 @@ void update_traj(TrajLNS& lns, int i){
 
 //        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
 //                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+
+        lns.goal_nodes[i] = astar(lns.env,lns.flow_with_time, lns.heuristics[goal],
+                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
     add_traj(lns,i);
