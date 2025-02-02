@@ -60,27 +60,28 @@ json Simulator::actual_path_to_json() const
             {
                 first = false;
             }
+            path+="F";
 
-            if (action == Action::FW)
-            {
-                path+="F";
-            }
-            else if (action == Action::CR)
-            {
-                path+="R";
-            } 
-            else if (action == Action::CCR)
-            {
-                path+="C";
-            }
-            else if (action == Action::NA)
-            {
-                path+="T";
-            }
-            else
-            {
-                path+="W";
-            }
+//            if (action == Action::FW)
+//            {
+//                path+="F";
+//            }
+//            else if (action == Action::CR)
+//            {
+//                path+="R";
+//            }
+//            else if (action == Action::CCR)
+//            {
+//                path+="C";
+//            }
+//            else if (action == Action::NA)
+//            {
+//                path+="T";
+//            }
+//            else
+//            {
+//                path+="W";
+//            }
         }
         apaths.push_back(path);
     }
@@ -107,26 +108,28 @@ json Simulator::planned_path_to_json() const
                 first = false;
             }
 
-            if (action == Action::FW)
-            {
-                path+="F";
-            }
-            else if (action == Action::CR)
-            {
-                path+="R";
-            } 
-            else if (action == Action::CCR)
-            {
-                path+="C";
-            } 
-            else if (action == Action::NA)
-            {
-                path+="T";
-            }
-            else
-            {
-                path+="W";
-            }
+            path+="W";
+
+//            if (action == Action::FW)
+//            {
+//                path+="F";
+//            }
+//            else if (action == Action::CR)
+//            {
+//                path+="R";
+//            }
+//            else if (action == Action::CCR)
+//            {
+//                path+="C";
+//            }
+//            else if (action == Action::NA)
+//            {
+//                path+="T";
+//            }
+//            else
+//            {
+//                path+="W";
+//            }
         }  
         ppaths.push_back(path);
     }

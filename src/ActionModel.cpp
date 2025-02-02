@@ -3,15 +3,26 @@
 
 std::ostream& operator<<(std::ostream &stream, const Action &action)
 {
-    if (action == Action::FW) {
-        stream << "F";
-    } else if (action == Action::CR) {
+    if (action == Action::R){
         stream << "R";
-    } else if (action == Action::CCR) {
-        stream << "C";
+    } else if (action == Action::D){
+        stream << "D";
+    } else if (action == Action::L){
+        stream << "L";
     } else {
-        stream << "W";
+        stream << "U";
     }
+
+
+//    if (action == Action::FW) {
+//        stream << "F";
+//    } else if (action == Action::CR) {
+//        stream << "R";
+//    } else if (action == Action::CCR) {
+//        stream << "C";
+//    } else {
+//        stream << "W";
+//    }
 
     return stream;
 }

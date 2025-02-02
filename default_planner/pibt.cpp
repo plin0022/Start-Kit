@@ -74,18 +74,24 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 
 		assert(validateMove(prev_loc, neighbor, lns.env));
 
-//		int min_heuristic = get_gp_h(lns, curr_id, neighbor);
+		int min_heuristic = get_gp_h(lns, curr_id, neighbor);
 
-        int min_heuristic = get_temp_goal_h(lns, curr_id, neighbor);
+//        int min_heuristic = get_temp_goal_h(lns, curr_id, neighbor);
 
 		successors.emplace_back(neighbor,min_heuristic,-1,rand());
 	}
 
-//	int wait_heuristic = get_gp_h(lns, curr_id, prev_loc);
+	int wait_heuristic = get_gp_h(lns, curr_id, prev_loc);
 
-    int wait_heuristic = get_temp_goal_h(lns, curr_id, prev_loc);
+//    int wait_heuristic = get_temp_goal_h(lns, curr_id, prev_loc);
 
 	successors.emplace_back(prev_loc, wait_heuristic,-1,rand());
+
+
+//    // temporary goal
+//    int curr_counter = lns.trajs_counter[curr_id];
+//    int temp_goal = lns.trajs[curr_id][curr_counter];
+
 
 
 	std::sort(successors.begin(), successors.end(), 
@@ -98,6 +104,16 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 						return true;
 					if (a.location!=orien_next_v && b.location==orien_next_v)
 						return false;
+//                    if (lns.heuristics[temp_goal].empty())
+//                        init_heuristic(lns.heuristics[temp_goal],lns.env,temp_goal);
+//
+//                    if (get_flex(lns.heuristics[temp_goal], lns.env, a.location,&(lns.neighbors)) >
+//                            get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
+//                        return true;
+//                    if (get_flex(lns.heuristics[temp_goal], lns.env, a.location,&(lns.neighbors)) <
+//                    get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
+//                        return false;
+
 					// random tie break
 					return a.tie_breaker < b.tie_breaker;
 			}
@@ -142,86 +158,99 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
     return false;
 }
 
-Action getAction(State& prev, State& next){
-	if (prev.location == next.location && prev.orientation == next.orientation){
-		return Action::W;
-	}
-	if (prev.location != next.location && prev.orientation == next.orientation){
-		return Action::FW;
-	}
-	if (next.orientation  == (prev.orientation+1)%4){
-		return Action::CR;
-	}
-	if (next.orientation  == (prev.orientation+3)%4){
-		return Action::CCR;
-	}
-	assert(false);
-	return Action::W;
-}
+//Action getAction(State& prev, State& next){
+//	if (prev.location == next.location && prev.orientation == next.orientation){
+//		return Action::W;
+//	}
+//	if (prev.location != next.location && prev.orientation == next.orientation){
+//		return Action::FW;
+//	}
+//	if (next.orientation  == (prev.orientation+1)%4){
+//		return Action::CR;
+//	}
+//	if (next.orientation  == (prev.orientation+3)%4){
+//		return Action::CCR;
+//	}
+//	assert(false);
+//	return Action::W;
+//}
+
 
 Action getAction(State& prev, int next_loc, SharedEnvironment* env){
-	if (prev.location == next_loc){
-		return Action::W;
-	}
-	int diff = next_loc -prev.location;
-	int orientation;
-	if (diff == 1){
-		orientation = 0;
-	}
-	if (diff == -1){
-		orientation = 2;
-	}
-	if (diff == env->cols){
-		orientation = 1;
-	}
-	if (diff == -env->cols){
-		orientation = 3;
-	}
-	if (orientation == prev.orientation){
-		return Action::FW;
-	}
-	if (orientation  == (prev.orientation+1)%4){
-		return Action::CR;
-	}
-	if (orientation  == (prev.orientation+3)%4){
-		return Action::CCR;
-	}
-	if (orientation  == (prev.orientation+2)%4){
-		return Action::CR;
-	}
-	assert(false);
+    if (prev.location == next_loc){
+        return Action::W;
+    }
+    if (next_loc-prev.location ==1)
+        return Action::R;
+    if (next_loc-prev.location ==-1)
+        return Action::L;
+    if (next_loc-prev.location == env->cols)
+        return Action::D;
+    if (next_loc-prev.location == -env->cols)
+        return Action::U;
 
+    return Action::W;
 
 
 }
 
-bool moveCheck(int id, std::vector<bool>& checked,
-		std::vector<DCR>& decided, std::vector<Action>& actions, std::vector<int>& prev_decision){
-	if (checked.at(id) && actions.at(id) == Action::FW)
-		return true;
-	checked.at(id) = true;
 
-	if (actions.at(id) != Action::FW)
-		return false;
+//Action getAction(State& prev, int next_loc, SharedEnvironment* env){
+//	if (prev.location == next_loc){
+//		return Action::W;
+//	}
+//	int diff = next_loc -prev.location;
+//	int orientation;
+//	if (diff == 1){
+//		orientation = 0;
+//	}
+//	if (diff == -1){
+//		orientation = 2;
+//	}
+//	if (diff == env->cols){
+//		orientation = 1;
+//	}
+//	if (diff == -env->cols){
+//		orientation = 3;
+//	}
+//	if (orientation == prev.orientation){
+//		return Action::FW;
+//	}
+//	if (orientation  == (prev.orientation+1)%4){
+//		return Action::CR;
+//	}
+//	if (orientation  == (prev.orientation+3)%4){
+//		return Action::CCR;
+//	}
+//	if (orientation  == (prev.orientation+2)%4){
+//		return Action::CR;
+//	}
+//	assert(false);
+//}
 
-	//move forward
-	int target = decided.at(id).loc;
-	assert(target != -1);
 
-	int na = prev_decision[target];
-	if (na == -1)
-		return true;
-
-	if (moveCheck(na,checked,decided,actions,prev_decision))
-		return true;
-	actions.at(id) = Action::W;
-	return false;
-	
-
-	
-
-	
-	
-}
+//bool moveCheck(int id, std::vector<bool>& checked,
+//		std::vector<DCR>& decided, std::vector<Action>& actions, std::vector<int>& prev_decision){
+//	if (checked.at(id) && actions.at(id) == Action::FW)
+//		return true;
+//	checked.at(id) = true;
+//
+//	if (actions.at(id) != Action::FW)
+//		return false;
+//
+//	//move forward
+//	int target = decided.at(id).loc;
+//	assert(target != -1);
+//
+//	int na = prev_decision[target];
+//	if (na == -1)
+//		return true;
+//
+//	if (moveCheck(na,checked,decided,actions,prev_decision))
+//		return true;
+//	actions.at(id) = Action::W;
+//	return false;
+//
+//}
 
 }
