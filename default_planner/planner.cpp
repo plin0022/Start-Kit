@@ -168,10 +168,18 @@ namespace DefaultPlanner{
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
+                trajLNS.trajs_counter[i] = 0;
+
                 if (!trajLNS.trajs[i].empty())
                     remove_traj(trajLNS, i);
                 update_traj(trajLNS, i);
             }
+
+            // update counter for temp_goal
+            int curr_counter = trajLNS.trajs_counter[i];
+            if (env->curr_states[i].location != trajLNS.trajs[i].back() &&
+            env->curr_states[i].location == trajLNS.trajs[i][curr_counter])
+                trajLNS.trajs_counter[i] = trajLNS.trajs_counter[i] + 1;
         }
 
         // iterate and recompute the guide path to optimise traffic flow
@@ -220,6 +228,23 @@ namespace DefaultPlanner{
             if (!checked.at(id) && actions.at(id) == Action::FW){
                 moveCheck(id,checked,decided,actions,prev_decision);
             }
+
+//            // try to delete the lns.flow
+//            if (moveCheck(id,checked,decided,actions,prev_decision))
+//            {
+//                int curr_counter = trajLNS.trajs_counter[id];
+//                int prev_loc = trajLNS.trajs[id][curr_counter];
+//
+//                if (prev_loc == prev_states[id].location)
+//                {
+//                    int curr_loc = trajLNS.trajs[id][curr_counter + 1];
+//                    int diff = curr_loc - prev_loc;
+//                    int d = get_d(diff, env);
+//                    trajLNS.flow[prev_loc].d[d] -= 1;
+////                    trajLNS.trajs_counter[id] = trajLNS.trajs_counter[id] + 1;
+//                }
+//
+//            }
         }
 
 

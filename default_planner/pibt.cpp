@@ -9,6 +9,33 @@
 
 namespace DefaultPlanner{
 
+
+    int get_temp_goal_h(TrajLNS& lns, int ai, int target){
+        int min_heuristic;
+        int curr_counter = lns.trajs_counter[ai];
+        int temp_goal;
+
+        if (!lns.trajs[ai].empty())
+            temp_goal = lns.trajs[ai][curr_counter];
+        else
+        {
+            if (!lns.heuristics[lns.tasks.at(ai)].empty())
+                min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
+            else
+                min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
+            return min_heuristic;
+        }
+
+        if (lns.heuristics[temp_goal].empty())
+            init_heuristic(lns.heuristics[temp_goal],lns.env,temp_goal);
+
+        min_heuristic = get_heuristic(lns.heuristics[temp_goal], lns.env, target, &(lns.neighbors));
+
+        return min_heuristic;
+    }
+
+
+
 int get_gp_h(TrajLNS& lns, int ai, int target){
     int min_heuristic;
 
@@ -47,12 +74,16 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 
 		assert(validateMove(prev_loc, neighbor, lns.env));
 
-		int min_heuristic = get_gp_h(lns, curr_id, neighbor);
+//		int min_heuristic = get_gp_h(lns, curr_id, neighbor);
+
+        int min_heuristic = get_temp_goal_h(lns, curr_id, neighbor);
 
 		successors.emplace_back(neighbor,min_heuristic,-1,rand());
 	}
 
-	int wait_heuristic = get_gp_h(lns, curr_id, prev_loc);
+//	int wait_heuristic = get_gp_h(lns, curr_id, prev_loc);
+
+    int wait_heuristic = get_temp_goal_h(lns, curr_id, prev_loc);
 
 	successors.emplace_back(prev_loc, wait_heuristic,-1,rand());
 
