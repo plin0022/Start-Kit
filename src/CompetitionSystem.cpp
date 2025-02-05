@@ -201,6 +201,52 @@ void BaseSystem::initialize()
     env->map = map.map;
     env->max_simulation_time = simulation_time;
 
+
+    // initialize corridor_nodes
+    auto node_freedom = [&](int node_id) {
+        int count = 0;
+        int neigh[4] = {1, -1, env->cols, -env->cols};
+        for (int j = 0; j < 4; j++)
+        {
+            int neigh_id = node_id + neigh[j];
+            if (neigh_id >= 0 && neigh_id < env->map.size() && env->map[neigh_id] == 0)
+                count = count + 1;
+        }
+        return count;
+    };
+
+    int neigh[4] = {1, -1, env->cols, -env->cols};
+    int freedom = 0;
+    for (int i = 0; i < env->map.size(); i++)
+    {
+        env->corridor_nodes.push_back(false);
+    }
+
+    for (int i = 0; i < env->map.size(); i++)
+    {
+        if (env->map[i] == 1)
+        {
+            continue;
+        }
+        if (node_freedom(i) == 2)
+        {
+            std::vector<int> two_neigh;
+            for (int j = 0; j < 4; j++)
+            {
+                int next = i + neigh[j];
+                if (next >= 0 && next < env->map.size() && env->map[next] == 0)
+                    two_neigh.push_back(next);
+            }
+            if ((abs(two_neigh[0] - two_neigh[1]) == 2) ||
+            (abs(two_neigh[0] - two_neigh[1]) == 2 * env->cols))
+            {
+                if (node_freedom(two_neigh[0]) == 4 && node_freedom(two_neigh[1]) == 4)
+                    env->corridor_nodes[i] = true;
+            }
+        }
+    }
+
+
     
     // // bool succ = load_records(); // continue simulating from the records
     // timestep = 0;
