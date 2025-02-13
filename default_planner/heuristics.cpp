@@ -1,6 +1,7 @@
 
 #include "heuristics.h"
 #include <queue>
+#include "pibt.h"
 
 namespace DefaultPlanner{
 
@@ -51,6 +52,67 @@ void init_heuristic(HeuristicTable& ht, SharedEnvironment* env, int goal_locatio
 	ht.open.push_back(root);  // add root to open
 }
 
+//void init_flextable(HeuristicTable& ht, SharedEnvironment* env, int goal_location)
+//{
+//    // initialize flex table
+//    ht.flex_table.clear();
+//    ht.flex_table.resize(env->map.size(), std::numeric_limits<unsigned int>::max());
+//    ht.flex_table[goal_location] = 0;
+//}
+
+
+//uint get_flex(HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns)
+//{
+//    if (ht.flex_table[source] < std::numeric_limits<unsigned int>::max())
+//        return ht.flex_table[source];
+//
+//
+//    const uint curr_dis = get_heuristic(ht, env, source, ns);
+//    int award_points = 2;
+//    uint final_points = 0;
+//    std::vector<int> neighbors;
+//    getNeighborLocs(ns,neighbors,source);
+//
+//
+//    for (int next : neighbors)
+//    {
+//        if (get_heuristic(ht, env, next, ns) < curr_dis)
+//            final_points = final_points + award_points +
+//                    get_flex(ht, env, next, ns);
+//    }
+//
+//    ht.flex_table[source] = final_points;
+//
+//    return final_points;
+//}
+
+
+//uint get_flex(TrajLNS& lns, int ai, int source, Neighbors* ns)
+//{
+//    if (lns.heuristics[lns.tasks.at(ai)].flex_table[source] < std::numeric_limits<unsigned int>::max())
+//        return lns.heuristics[lns.tasks.at(ai)].flex_table[source];
+//
+//
+//    const int curr_dis = get_gp_h(lns, ai, source);
+//    int award_points = 2;
+//    uint final_points = 0;
+//    std::vector<int> neighbors;
+//    getNeighborLocs(ns,neighbors,source);
+//
+//
+//    for (int next : neighbors)
+//    {
+//        if (get_gp_h(lns, ai, next) < curr_dis)
+//            final_points = final_points + award_points +
+//                           get_flex(lns, ai,next, ns);
+//    }
+//
+//    lns.heuristics[lns.tasks.at(ai)].flex_table[source] = final_points;
+//
+//    return final_points;
+//}
+
+
 
 int get_heuristic(HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns){
 		if (ht.htable[source] < MAX_TIMESTEP) return ht.htable[source];
@@ -88,6 +150,98 @@ int get_heuristic(HeuristicTable& ht, SharedEnvironment* env, int source, Neighb
 
 
 		return MAX_TIMESTEP;
+}
+
+
+void init_traffic_heuristic(HeuristicTable& ht, SharedEnvironment* env, int goal_location){
+    // initialize my_heuristic, but have error on malloc: Region cookie corrupted for region
+    ht.traffic_htable.clear();
+    ht.traffic_htable.resize(env->map.size(),MAX_TIMESTEP);
+    ht.traffic_open.clear();
+    ht.node_list.clear();
+
+    // generate an open that can save nodes (and a open_handle)
+    s_node *root = new s_node(goal_location, 0, 0, 0, 0);
+    ht.traffic_htable[goal_location] = 0;
+    ht.traffic_open.push(root);  // add root to open
+    ht.node_list[goal_location] = root;
+}
+
+int get_traffic_heuristic(TrajLNS& lns, HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns)
+{
+    if (ht.traffic_htable[source] < MAX_TIMESTEP) return ht.traffic_htable[source];
+
+    std::vector<int> neighbors;
+    int cost, diff, d, temp_op, temp_vertex;
+
+    while (!ht.traffic_open.empty())
+    {
+        s_node *curr = ht.traffic_open.pop();
+        ht.traffic_htable[curr->id] = curr->g;
+        curr->close();
+
+        if (source == curr->id)
+            return curr->g;
+
+
+        getNeighborLocs(ns,neighbors,curr->id);
+
+
+        for (int next : neighbors)
+        {
+            diff = curr->id - next;
+            d = get_d(diff, env);
+
+            temp_op = ((lns.flow[next].d[d] + 1) *
+                       lns.flow[curr->id].d[(d + 2) % 4]);///( ( (flow[curr->id].d[d]+1) + flow[next].d[(d+2)%4]));
+            //all vertex flow
+            //the sum of all out going edge flow is the same as the total number of vertex visiting.
+            temp_vertex = 1;
+            for (int j = 0; j < 4; j++) {
+                temp_vertex += lns.flow[curr->id].d[j];
+            }
+
+
+            cost = curr->g + 1 + temp_op + (temp_vertex - 1) / 2;
+
+            assert(next >= 0 && next < env->map.size());
+            //set current cost for reversed direction
+
+            if (ht.node_list.find(next) == ht.node_list.end())
+            {
+                s_node *next_node = new s_node(next, cost, 0, 0, 0);
+                ht.traffic_open.push(next_node);
+                ht.node_list[next] = next_node;
+            }
+            else
+            {
+                s_node *existing = ht.node_list[next];
+
+                if (!existing->is_closed())
+                {
+                    if (cost < existing->g)
+                    {
+                        existing->g = cost;
+                        ht.traffic_open.decrease_key(existing);
+                    }
+                }
+                else
+                {
+                    if (cost < existing->g)
+                    {
+                        std::cout << "error in astar: re-expansion" << std::endl;
+                        assert(false);
+                        exit(1);
+                    }
+                }
+            }
+
+        }
+
+    }
+
+
+    return MAX_TIMESTEP;
 }
 
 int get_h(SharedEnvironment* env, int source, int target){

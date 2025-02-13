@@ -5,7 +5,7 @@
 #include "Memory.h"
 #include "search_node.h"
 #include "heap.h"
-#include "heuristics.h"
+//#include "heuristics.h"
 #include <iostream>
 
 #include <set>
@@ -62,6 +62,9 @@ class TrajLNS{
     std::vector<std::pair<int,int>> deviation_agents;
 
     std::vector<Int4> flow;
+
+    std::vector<std::vector<std::pair<int, Int4>>> flow_time;    // time dependent flow
+
     std::vector<std::vector<std::pair<bool, std::array<bool, 4>>>> constraint_flow; // constraints table for vertex and edge conflicts
 
     std::vector<HeuristicTable>& heuristics;
@@ -89,12 +92,6 @@ class TrajLNS{
         tasks(env->num_of_agents),
         flow(env->map.size(),Int4({0,0,0,0})),
         heuristics(heuristics),
-        constraint_flow(
-                env->max_simulation_time * 2,
-                std::vector<std::pair<bool, std::array<bool, 4>>>(
-                        env->map.size(), {false, {false, false, false, false}}
-                )
-        ),
         traj_dists(env->num_of_agents),goal_nodes(env->num_of_agents),
         fw_metrics(env->num_of_agents),neighbors(neighbors){
         };

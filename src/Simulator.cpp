@@ -60,7 +60,35 @@ json Simulator::actual_path_to_json() const
             {
                 first = false;
             }
-            path+="F";
+
+            if (action == Action::R)
+            {
+                path+="R";
+            }
+            else if (action == Action::D)
+            {
+                path+="D";
+            }
+            else if (action == Action::L)
+            {
+                path+="L";
+            }
+            else if (action == Action::U)
+            {
+                path+="U";
+            }
+            else if (action == Action::W)
+            {
+                path+="W";
+            }
+            else
+            {
+                path+="T";
+            }
+
+
+
+
 
 //            if (action == Action::FW)
 //            {

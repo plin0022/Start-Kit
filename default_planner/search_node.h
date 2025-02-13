@@ -19,6 +19,10 @@ struct s_node
     double tie_breaker = 0;
     s_node* parent = nullptr;
 
+    // parents and children
+    std::unordered_map<int, s_node*> parents;
+    std::unordered_map<int, s_node*> children;
+
     unsigned int priority;
 
     s_node(int id, int curr_timestep, int g, int h, int op_flow, int depth) : id(id), curr_timestep(curr_timestep),
@@ -53,6 +57,8 @@ struct s_node
         parent = nullptr;
         tie_breaker = 0;
 
+        parents.clear();
+        children.clear();
     }
     /* data */
 };

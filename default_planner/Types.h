@@ -16,6 +16,9 @@
 #include "SharedEnv.h"
 #include "ActionModel.h"
 
+
+#include "heap.h"
+
 namespace DefaultPlanner{
 
 	
@@ -77,8 +80,18 @@ namespace DefaultPlanner{
 
 	struct HeuristicTable{
 		std::vector<int> htable;
+        std::vector<uint> flex_table;
 		std::deque<HNode> open;
-		
+
+
+        std::vector<int> traffic_htable;
+        pqueue_min_of traffic_open;
+        std::unordered_map<int, s_node*> node_list;
+
+        bool traffic_empty(){
+            return traffic_htable.empty();
+        }
+
 		bool empty(){
 			return htable.empty();
 		}

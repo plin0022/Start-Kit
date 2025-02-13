@@ -9,7 +9,7 @@
 namespace DefaultPlanner{
 
     //default planner data
-    std::vector<int> decision; 
+    std::vector<int> decision;
     std::vector<int> prev_decision;
     std::vector<double> p;
     std::vector<State> prev_states;
@@ -26,10 +26,10 @@ namespace DefaultPlanner{
 
     /**
      * @brief Default planner initialization
-     * 
+     *
      * @param preprocess_time_limit time limit for preprocessing in milliseconds
      * @param env shared environment object
-     * 
+     *
      * The initialization function initializes the default planner data structures and heuristics tables.
      */
     void initialize(int preprocess_time_limit, SharedEnvironment* env){
@@ -67,12 +67,12 @@ namespace DefaultPlanner{
 
     /**
      * @brief Default planner plan function
-     * 
+     *
      * @param time_limit time limit for planning in milliseconds
      * @param actions vector of actions to be populated by the planner
      * @param env shared environment object
-     * 
-     * The plan function is the main function of the default planner. 
+     *
+     * The plan function is the main function of the default planner.
      * It computes the actions for the agents based on the current state of the environment.
      * The function first checks assignments/goal location changes and perform the necessary updates.
      * It then computes and optimises traffic flow optimised guide paths for the agents.
@@ -86,7 +86,7 @@ namespace DefaultPlanner{
         //cap the time for distance to goal heuristic table initialisation to half of the given time_limit;
         int pibt_time = PIBT_RUNTIME_PER_100_AGENTS * env->num_of_agents/100;
         //traffic flow assignment end time, leave PIBT_RUNTIME_PER_100_AGENTS ms per 100 agent and TRAFFIC_FLOW_ASSIGNMENT_END_TIME_TOLERANCE ms for computing pibt actions;
-        TimePoint end_time = start_time + std::chrono::milliseconds(time_limit - pibt_time - TRAFFIC_FLOW_ASSIGNMENT_END_TIME_TOLERANCE); 
+        TimePoint end_time = start_time + std::chrono::milliseconds(time_limit - pibt_time - TRAFFIC_FLOW_ASSIGNMENT_END_TIME_TOLERANCE);
 
         // recrod the initial location of each agent as dummy goals in case no goal is assigned to the agent.
         if (env->curr_timestep == 0){
@@ -106,17 +106,31 @@ namespace DefaultPlanner{
         for(int i=0; i<env->num_of_agents; i++)
         {
             //initialise the shortest distance heuristic table for the goal location of the agent
-            if ( ( std::chrono::steady_clock::now() < end_time) ){
-                for(int j=0; j<env->goal_locations[i].size(); j++)
+//            if ( ( std::chrono::steady_clock::now() < end_time) ){
+//                for(int j=0; j<env->goal_locations[i].size(); j++)
+//                {
+//                    int goal_loc = env->goal_locations[i][j].first;
+//                        if (trajLNS.heuristics.at(goal_loc).empty()){
+//                            init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
+//                            init_flextable(trajLNS.heuristics[goal_loc],env,goal_loc);
+//                            count++;
+//                        }
+//                }
+//            }
+
+            for(int j=0; j<env->goal_locations[i].size(); j++)
+            {
+                int goal_loc = env->goal_locations[i][j].first;
+                if (trajLNS.heuristics.at(goal_loc).empty()){
+                    init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
+                    count++;
+                }
+                if (trajLNS.heuristics.at(goal_loc).traffic_empty())
                 {
-                    int goal_loc = env->goal_locations[i][j].first;
-                        if (trajLNS.heuristics.at(goal_loc).empty()){
-                            init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
-                            count++;
-                        }
+                    init_traffic_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
                 }
             }
-            
+
 
             // set the goal location of each agent
             if (env->goal_locations[i].empty()){
@@ -131,13 +145,13 @@ namespace DefaultPlanner{
             require_guide_path[i] = false;
             if (trajLNS.trajs[i].empty() || trajLNS.trajs[i].back() != trajLNS.tasks[i])
                     require_guide_path[i] = true;
-            
+
             // check if the agent completed the action in the previous timestep
             // if not, the agent is till turning towards the action direction, we do not need to plan new action for the agent
             assert(env->curr_states[i].location >=0);
             prev_states[i] = env->curr_states[i];
             next_states[i] = State();
-            prev_decision[env->curr_states[i].location] = i; 
+            prev_decision[env->curr_states[i].location] = i;
             if (decided[i].loc == -1){
                 decided[i].loc = env->curr_states[i].location;
                 assert(decided[i].state == DONE::DONE);
@@ -145,10 +159,10 @@ namespace DefaultPlanner{
             if (prev_states[i].location == decided[i].loc){
                 decided[i].state = DONE::DONE;
             }
-            if (decided[i].state == DONE::NOT_DONE){
-                decision.at(decided[i].loc) = i;
-                next_states[i] = State(decided[i].loc,-1,-1);
-            }
+//            if (decided[i].state == DONE::NOT_DONE){
+//                decision.at(decided[i].loc) = i;
+//                next_states[i] = State(decided[i].loc,-1,-1);
+//            }
 
             // reset the pibt priority if the agent reached prvious goal location and switch to new goal location
             if(require_guide_path[i])
@@ -160,7 +174,7 @@ namespace DefaultPlanner{
             if (!env->goal_locations[i].empty() && trajLNS.neighbors[env->curr_states[i].location].size() == 1){
                 p[i] = p[i] + 10;
             }
-            
+
         }
 
         // compute the congestion minimised guide path for the agents that need guide path update
@@ -177,9 +191,15 @@ namespace DefaultPlanner{
 
             // update counter for temp_goal
             int curr_counter = trajLNS.trajs_counter[i];
+            int incre_num = 1;
             if (env->curr_states[i].location != trajLNS.trajs[i].back() &&
             env->curr_states[i].location == trajLNS.trajs[i][curr_counter])
-                trajLNS.trajs_counter[i] = trajLNS.trajs_counter[i] + 1;
+            {
+                if ((trajLNS.trajs_counter[i] + incre_num) < trajLNS.trajs[i].size())
+                    trajLNS.trajs_counter[i] = trajLNS.trajs_counter[i] + incre_num;
+                else
+                    trajLNS.trajs_counter[i] = trajLNS.trajs_counter[i] + 1;
+            }
         }
 
         // iterate and recompute the guide path to optimise traffic flow
@@ -194,9 +214,9 @@ namespace DefaultPlanner{
 
         // compute the targeted next location for each agent using PIBT
         for (int i : ids){
-            if (decided[i].state == DONE::NOT_DONE){
-                continue;
-            }
+//            if (decided[i].state == DONE::NOT_DONE){
+//                continue;
+//            }
             if (next_states[i].location==-1){
                 assert(prev_states[i].location >=0 && prev_states[i].location < env->map.size());
                 causalPIBT(i,-1,prev_states,next_states,
@@ -204,7 +224,8 @@ namespace DefaultPlanner{
                     occupied, trajLNS);
             }
         }
-        
+
+
         // post processing the targeted next location to turning or moving actions
         actions.resize(env->num_of_agents);
         for (int id : ids){
@@ -224,32 +245,34 @@ namespace DefaultPlanner{
 
         // recursively check if the FW action can be executed by checking whether all agents in the front of the agent can move forward
         // if any agent cannot move foward due to turning, all agents behind the turning agent will not move forward.
-        for (int id=0;id < env->num_of_agents ; id++){
-            if (!checked.at(id) && actions.at(id) == Action::FW){
-                moveCheck(id,checked,decided,actions,prev_decision);
-            }
-
-//            // try to delete the lns.flow
-//            if (moveCheck(id,checked,decided,actions,prev_decision))
-//            {
-//                int curr_counter = trajLNS.trajs_counter[id];
-//                int prev_loc = trajLNS.trajs[id][curr_counter];
-//
-//                if (prev_loc == prev_states[id].location)
-//                {
-//                    int curr_loc = trajLNS.trajs[id][curr_counter + 1];
-//                    int diff = curr_loc - prev_loc;
-//                    int d = get_d(diff, env);
-//                    trajLNS.flow[prev_loc].d[d] -= 1;
-////                    trajLNS.trajs_counter[id] = trajLNS.trajs_counter[id] + 1;
-//                }
-//
+//        for (int id=0;id < env->num_of_agents ; id++){
+//            if (!checked.at(id) && actions.at(id) == Action::FW){
+//                moveCheck(id,checked,decided,actions,prev_decision);
 //            }
-        }
+//        }
 
 
 
         prev_states = next_states;
+
+
+//        // clear flex_table for those arrive goals
+//        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
+//        {
+//            int curr_goal = trajLNS.tasks.at(agent_i);
+//            if (prev_states[agent_i].location == curr_goal)
+//                init_flextable(trajLNS.heuristics[curr_goal], env, curr_goal);
+//        }
+
+        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
+        {
+            int curr_goal = trajLNS.tasks.at(agent_i);
+            if (prev_states[agent_i].location == curr_goal)
+                init_traffic_heuristic(trajLNS.heuristics[curr_goal], env, curr_goal);
+        }
+
+
+
         return;
 
     };

@@ -39,12 +39,24 @@ namespace DefaultPlanner{
 int get_gp_h(TrajLNS& lns, int ai, int target){
     int min_heuristic;
 
-    if (!lns.traj_dists.empty() && !lns.traj_dists[ai].empty())
-        min_heuristic = get_dist_2_path(lns.traj_dists[ai], lns.env, target, &(lns.neighbors));	
-    else if (!lns.heuristics[lns.tasks.at(ai)].empty())
-        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
+    if (!lns.heuristics[lns.tasks.at(ai)].traffic_empty())
+        min_heuristic = get_traffic_heuristic(lns, lns.heuristics[lns.tasks.at(ai)],
+                                              lns.env, target, &(lns.neighbors));
     else
         min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
+
+
+//    if (!lns.heuristics[lns.tasks.at(ai)].empty())
+//        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
+//    else
+//        min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
+
+//    if (!lns.traj_dists.empty() && !lns.traj_dists[ai].empty())
+//        min_heuristic = get_dist_2_path(lns.traj_dists[ai], lns.env, target, &(lns.neighbors));
+//    else if (!lns.heuristics[lns.tasks.at(ai)].empty())
+//        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
+//    else
+//        min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
     
     return min_heuristic;
 }
@@ -88,9 +100,9 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 	successors.emplace_back(prev_loc, wait_heuristic,-1,rand());
 
 
-//    // temporary goal
-//    int curr_counter = lns.trajs_counter[curr_id];
-//    int temp_goal = lns.trajs[curr_id][curr_counter];
+    // temporary goal
+
+    int temp_goal = lns.tasks.at(curr_id);
 
 
 
@@ -100,18 +112,31 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 			int diff[4] = {1,lns.env->cols,-1,-lns.env->cols};
 			if (a.heuristic == b.heuristic){
 					//tie break on prefer moving forward
-					if (a.location==orien_next_v && b.location!=orien_next_v)
-						return true;
-					if (a.location!=orien_next_v && b.location==orien_next_v)
-						return false;
-//                    if (lns.heuristics[temp_goal].empty())
+//					if (a.location==orien_next_v && b.location!=orien_next_v)
+//						return true;
+//					if (a.location!=orien_next_v && b.location==orien_next_v)
+//						return false;
+
+//                    if(lns.heuristics[temp_goal].htable.empty())
 //                        init_heuristic(lns.heuristics[temp_goal],lns.env,temp_goal);
 //
+//                    if (lns.heuristics[temp_goal].flex_table.empty())
+//                        init_flextable(lns.heuristics[temp_goal],lns.env,temp_goal);
+//
+//
 //                    if (get_flex(lns.heuristics[temp_goal], lns.env, a.location,&(lns.neighbors)) >
-//                            get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
+//                        get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
 //                        return true;
 //                    if (get_flex(lns.heuristics[temp_goal], lns.env, a.location,&(lns.neighbors)) <
-//                    get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
+//                        get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
+//                        return false;
+
+
+//                    if (get_flex(lns, curr_id, a.location,&(lns.neighbors)) >
+//                        get_flex(lns, curr_id, b.location,&(lns.neighbors)))
+//                        return true;
+//                    if (get_flex(lns, curr_id, a.location,&(lns.neighbors)) <
+//                        get_flex(lns, curr_id, b.location,&(lns.neighbors)))
 //                        return false;
 
 					// random tie break
