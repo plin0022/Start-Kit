@@ -110,26 +110,30 @@ namespace DefaultPlanner{
 //                for(int j=0; j<env->goal_locations[i].size(); j++)
 //                {
 //                    int goal_loc = env->goal_locations[i][j].first;
-//                        if (trajLNS.heuristics.at(goal_loc).empty()){
-//                            init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
-//                            init_flextable(trajLNS.heuristics[goal_loc],env,goal_loc);
-//                            count++;
-//                        }
+//                    if (trajLNS.heuristics.at(goal_loc).empty()){
+//                        init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
+//                        init_flextable(trajLNS.heuristics[goal_loc],env,goal_loc);
+//                        count++;
+//                    }
 //                }
 //            }
 
-            for(int j=0; j<env->goal_locations[i].size(); j++)
-            {
-                int goal_loc = env->goal_locations[i][j].first;
-                if (trajLNS.heuristics.at(goal_loc).empty()){
-                    init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
-                    count++;
-                }
-                if (trajLNS.heuristics.at(goal_loc).traffic_empty())
+
+            if ( ( std::chrono::steady_clock::now() < end_time) ){
+                for(int j=0; j<env->goal_locations[i].size(); j++)
                 {
-                    init_traffic_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
+                    int goal_loc = env->goal_locations[i][j].first;
+                    if (trajLNS.heuristics.at(goal_loc).empty()){
+                        init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
+                        count++;
+                    }
+                    if (trajLNS.heuristics.at(goal_loc).traffic_empty())
+                    {
+                        init_traffic_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
+                    }
                 }
             }
+
 
 
             // set the goal location of each agent
@@ -159,10 +163,7 @@ namespace DefaultPlanner{
             if (prev_states[i].location == decided[i].loc){
                 decided[i].state = DONE::DONE;
             }
-//            if (decided[i].state == DONE::NOT_DONE){
-//                decision.at(decided[i].loc) = i;
-//                next_states[i] = State(decided[i].loc,-1,-1);
-//            }
+
 
             // reset the pibt priority if the agent reached prvious goal location and switch to new goal location
             if(require_guide_path[i])
@@ -182,24 +183,11 @@ namespace DefaultPlanner{
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
-                trajLNS.trajs_counter[i] = 0;
-
                 if (!trajLNS.trajs[i].empty())
                     remove_traj(trajLNS, i);
                 update_traj(trajLNS, i);
             }
 
-            // update counter for temp_goal
-            int curr_counter = trajLNS.trajs_counter[i];
-            int incre_num = 1;
-            if (env->curr_states[i].location != trajLNS.trajs[i].back() &&
-            env->curr_states[i].location == trajLNS.trajs[i][curr_counter])
-            {
-                if ((trajLNS.trajs_counter[i] + incre_num) < trajLNS.trajs[i].size())
-                    trajLNS.trajs_counter[i] = trajLNS.trajs_counter[i] + incre_num;
-                else
-                    trajLNS.trajs_counter[i] = trajLNS.trajs_counter[i] + 1;
-            }
         }
 
         // iterate and recompute the guide path to optimise traffic flow
@@ -214,9 +202,6 @@ namespace DefaultPlanner{
 
         // compute the targeted next location for each agent using PIBT
         for (int i : ids){
-//            if (decided[i].state == DONE::NOT_DONE){
-//                continue;
-//            }
             if (next_states[i].location==-1){
                 assert(prev_states[i].location >=0 && prev_states[i].location < env->map.size());
                 causalPIBT(i,-1,prev_states,next_states,
@@ -243,15 +228,6 @@ namespace DefaultPlanner{
 
         }
 
-        // recursively check if the FW action can be executed by checking whether all agents in the front of the agent can move forward
-        // if any agent cannot move foward due to turning, all agents behind the turning agent will not move forward.
-//        for (int id=0;id < env->num_of_agents ; id++){
-//            if (!checked.at(id) && actions.at(id) == Action::FW){
-//                moveCheck(id,checked,decided,actions,prev_decision);
-//            }
-//        }
-
-
 
         prev_states = next_states;
 
@@ -268,7 +244,10 @@ namespace DefaultPlanner{
         {
             int curr_goal = trajLNS.tasks.at(agent_i);
             if (prev_states[agent_i].location == curr_goal)
+            {
                 init_traffic_heuristic(trajLNS.heuristics[curr_goal], env, curr_goal);
+            }
+
         }
 
 

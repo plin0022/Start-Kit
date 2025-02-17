@@ -60,6 +60,7 @@ namespace DefaultPlanner{
 			int direction;
 			int value;
 			int other;
+            bool closed = false;
 
 			unsigned int priority;
 			unsigned int get_priority() const { return priority; }
@@ -68,6 +69,10 @@ namespace DefaultPlanner{
 
 			HNode() = default;
 			HNode(int location,int direction, int value) : location(location), direction(direction), value(value) {}
+
+            bool is_closed() const { return closed; }
+            void close() { closed = true; }
+
 			// the following is used to compare nodes in the OPEN list
 			struct compare_node
 			{
@@ -78,15 +83,29 @@ namespace DefaultPlanner{
 			};  // used by OPEN (open) to compare nodes (top of the open has min f-val, and then highest g-val)
 		};
 
-	struct HeuristicTable{
+
+        struct compare_node
+        {
+            bool operator()(const HNode& n1, const HNode& n2) const
+            {
+                return n1.value < n2.value;
+            }
+        };
+
+    struct HeuristicTable{
 		std::vector<int> htable;
-        std::vector<uint> flex_table;
 		std::deque<HNode> open;
 
+        // flexibility
+        std::vector<uint> flex_table;
 
+
+        // traffic
         std::vector<int> traffic_htable;
-        pqueue_min_of traffic_open;
-        std::unordered_map<int, s_node*> node_list;
+        pqueue<HNode,compare_node, min_q> traffic_open;
+        std::vector<bool> traffic_closed;
+
+        std::unordered_map<int, HNode*> node_list;
 
         bool traffic_empty(){
             return traffic_htable.empty();
@@ -120,6 +139,7 @@ namespace DefaultPlanner{
 	};
 
 	typedef std::vector<std::vector<int>> Neighbors;
+
 
 }
 

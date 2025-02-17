@@ -28,6 +28,7 @@ int get_heuristic(HeuristicTable& ht, SharedEnvironment* env, int source, Neighb
 void init_traffic_heuristic(HeuristicTable& ht, SharedEnvironment* env, int goal_location);
 
 int get_traffic_heuristic(TrajLNS& lns, HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns);
+
 //
 
 uint get_flex(HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns);

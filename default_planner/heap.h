@@ -274,7 +274,6 @@ typedef pqueue<s_node,cmp_less_of, min_q> pqueue_min_of;
 
 typedef pqueue<s_node,cmp_less_f, min_q> pqueue_min_f;
 
-
 }
 
 #endif

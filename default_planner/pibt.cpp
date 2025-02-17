@@ -10,38 +10,14 @@
 namespace DefaultPlanner{
 
 
-    int get_temp_goal_h(TrajLNS& lns, int ai, int target){
-        int min_heuristic;
-        int curr_counter = lns.trajs_counter[ai];
-        int temp_goal;
-
-        if (!lns.trajs[ai].empty())
-            temp_goal = lns.trajs[ai][curr_counter];
-        else
-        {
-            if (!lns.heuristics[lns.tasks.at(ai)].empty())
-                min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
-            else
-                min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
-            return min_heuristic;
-        }
-
-        if (lns.heuristics[temp_goal].empty())
-            init_heuristic(lns.heuristics[temp_goal],lns.env,temp_goal);
-
-        min_heuristic = get_heuristic(lns.heuristics[temp_goal], lns.env, target, &(lns.neighbors));
-
-        return min_heuristic;
-    }
-
-
-
 int get_gp_h(TrajLNS& lns, int ai, int target){
     int min_heuristic;
 
     if (!lns.heuristics[lns.tasks.at(ai)].traffic_empty())
         min_heuristic = get_traffic_heuristic(lns, lns.heuristics[lns.tasks.at(ai)],
                                               lns.env, target, &(lns.neighbors));
+//        min_heuristic = get_traffic_heuristic(lns.heuristics[lns.tasks.at(ai)],
+//                                              lns.env, target, &(lns.neighbors));
     else
         min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
 
@@ -50,6 +26,7 @@ int get_gp_h(TrajLNS& lns, int ai, int target){
 //        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
 //    else
 //        min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
+
 
 //    if (!lns.traj_dists.empty() && !lns.traj_dists[ai].empty())
 //        min_heuristic = get_dist_2_path(lns.traj_dists[ai], lns.env, target, &(lns.neighbors));
@@ -60,6 +37,7 @@ int get_gp_h(TrajLNS& lns, int ai, int target){
     
     return min_heuristic;
 }
+
 
 bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 	 std::vector<State>& next_states,
@@ -88,21 +66,15 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 
 		int min_heuristic = get_gp_h(lns, curr_id, neighbor);
 
-//        int min_heuristic = get_temp_goal_h(lns, curr_id, neighbor);
 
 		successors.emplace_back(neighbor,min_heuristic,-1,rand());
 	}
 
 	int wait_heuristic = get_gp_h(lns, curr_id, prev_loc);
 
-//    int wait_heuristic = get_temp_goal_h(lns, curr_id, prev_loc);
 
 	successors.emplace_back(prev_loc, wait_heuristic,-1,rand());
 
-
-    // temporary goal
-
-    int temp_goal = lns.tasks.at(curr_id);
 
 
 
