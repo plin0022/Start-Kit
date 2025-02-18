@@ -217,10 +217,6 @@ int get_traffic_heuristic(TrajLNS& lns, HeuristicTable& ht, SharedEnvironment* e
         ht.node_list.erase(curr_location);
 
 
-        if (source == curr_location)
-            return curr_value;
-
-
         getNeighborLocs(ns,neighbors, curr_location);
 
 
@@ -239,8 +235,8 @@ int get_traffic_heuristic(TrajLNS& lns, HeuristicTable& ht, SharedEnvironment* e
             }
 
 
-            cost = curr_value + 1 + temp_op + (temp_vertex - 1) / 2;
-//            cost = curr_value + 1;
+//            cost = curr_value + 1 + temp_op + (temp_vertex - 1) / 2;
+            cost = curr_value + 1;
 
             assert(next >= 0 && next < env->map.size());
             //set current cost for reversed direction
@@ -279,6 +275,9 @@ int get_traffic_heuristic(TrajLNS& lns, HeuristicTable& ht, SharedEnvironment* e
             }
 
         }
+
+        if (source == curr_location)
+            return curr_value;
 
     }
 

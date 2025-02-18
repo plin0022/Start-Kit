@@ -18,7 +18,7 @@
 
 namespace DefaultPlanner{
 
-int get_gp_h(TrajLNS& lns, int ai, int target);
+int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc);
 
 
 bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
