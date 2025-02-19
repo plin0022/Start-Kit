@@ -277,42 +277,6 @@ namespace DefaultPlanner {
             exit(1);
         }
 
-        std::unordered_map<int, int> all_nodes;
-        std::vector<std::unordered_map<int, s_node*>> level_nodes;
-        std::unordered_map<int, s_node*> level_0;
-        level_0[goal_node->id] = goal_node;
-        level_nodes.push_back(level_0);
-        all_nodes[goal_node->id] = 0;
-        // todo
-
-        int level = 0;
-        while (!level_nodes[level].empty())
-        {
-            std::unordered_map<int, s_node*> curr_level = level_nodes[level];
-            std::unordered_map<int, s_node*> next_level;
-            for (auto each : curr_level)
-            {
-                for (auto each_parent : each.second->parents)
-                {
-                    next_level[each_parent.first] = each_parent.second;
-                    if (all_nodes.find(each_parent.first) == all_nodes.end())
-                        all_nodes[each_parent.first] = level + 1;
-                    else if (all_nodes.find(each_parent.first) != all_nodes.end() &&
-                    all_nodes[each_parent.first] != level + 1)
-                        int xxx  =12321;
-
-                }
-            }
-            if (next_level.empty())
-                break;
-            level_nodes.push_back(next_level);
-            level = level + 1;
-
-        }
-
-
-
-
 
 
 
