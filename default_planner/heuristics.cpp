@@ -235,8 +235,8 @@ int get_traffic_heuristic(TrajLNS& lns, HeuristicTable& ht, SharedEnvironment* e
             }
 
 
-//            cost = curr_value + 1 + temp_op + (temp_vertex - 1) / 2;
-            cost = curr_value + 1;
+            cost = curr_value + 1 + temp_op + (temp_vertex - 1) / 2;
+//            cost = curr_value + 1;
 
             assert(next >= 0 && next < env->map.size());
             //set current cost for reversed direction

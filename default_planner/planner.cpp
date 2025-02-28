@@ -240,6 +240,8 @@ namespace DefaultPlanner{
 //                init_flextable(trajLNS.heuristics[curr_goal], env, curr_goal);
 //        }
 
+
+
 //        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
 //        {
 //            int curr_goal = trajLNS.tasks.at(agent_i);

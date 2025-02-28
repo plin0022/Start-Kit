@@ -13,30 +13,11 @@ namespace DefaultPlanner{
 int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
     int min_heuristic;
 
+
     if (!lns.heuristics[lns.tasks.at(ai)].traffic_empty())
     {
-        if (target == 946)
-        {
-            int xxx =123;
-        }
-        int diff = target - curr_loc;
-        int temp_op = 0;
-        if (diff != 0)
-        {
-            int d = get_d(diff, lns.env);
-            temp_op = ((lns.flow[curr_loc].d[d] + 1) *
-                       lns.flow[target].d[(d + 2) % 4]);
-        }
-
-        int temp_vertex = 1;
-        for (int j = 0; j < 4; j++) {
-            temp_vertex += lns.flow[target].d[j];
-        }
-
         min_heuristic = get_traffic_heuristic(lns, lns.heuristics[lns.tasks.at(ai)],
                                               lns.env, target, &(lns.neighbors));
-//                                                      temp_op +
-//                                                      (temp_vertex - 1) / 2;
     }
     else
         min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
@@ -101,41 +82,54 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 	std::sort(successors.begin(), successors.end(), 
 		[&](PIBT_C& a, PIBT_C& b)
 		{
-			int diff[4] = {1,lns.env->cols,-1,-lns.env->cols};
-			if (a.heuristic == b.heuristic){
-					//tie break on prefer moving forward
-//					if (a.location==orien_next_v && b.location!=orien_next_v)
-//						return true;
-//					if (a.location!=orien_next_v && b.location==orien_next_v)
-//						return false;
+            // prefer the tile which optimizes the current tile (A* updates with better costs)
+            int diff_a = a.location - prev_loc;
+            int diff_b = b.location - prev_loc;
+            int d_a = get_d(diff_a, lns.env);
+            int d_b = get_d(diff_b, lns.env);
 
-//                    if(lns.heuristics[temp_goal].htable.empty())
-//                        init_heuristic(lns.heuristics[temp_goal],lns.env,temp_goal);
-//
-//                    if (lns.heuristics[temp_goal].flex_table.empty())
-//                        init_flextable(lns.heuristics[temp_goal],lns.env,temp_goal);
-//
-//
-//                    if (get_flex(lns.heuristics[temp_goal], lns.env, a.location,&(lns.neighbors)) >
-//                        get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
-//                        return true;
-//                    if (get_flex(lns.heuristics[temp_goal], lns.env, a.location,&(lns.neighbors)) <
-//                        get_flex(lns.heuristics[temp_goal], lns.env, b.location,&(lns.neighbors)))
-//                        return false;
+            int temp_op_a = (lns.flow[prev_loc].d[d_a] + 1) * lns.flow[a.location].d[(d_a + 2) % 4];
+            int temp_op_b = (lns.flow[prev_loc].d[d_b] + 1) * lns.flow[b.location].d[(d_b + 2) % 4];
+
+            int temp_vertex_a = 1;
+            for (int j = 0; j < 4; j++) {
+                temp_vertex_a += lns.flow[a.location].d[j];
+            }
+
+            int temp_vertex_b = 1;
+            for (int j = 0; j < 4; j++) {
+                temp_vertex_b += lns.flow[b.location].d[j];
+            }
 
 
-//                    if (get_flex(lns, curr_id, a.location,&(lns.neighbors)) >
-//                        get_flex(lns, curr_id, b.location,&(lns.neighbors)))
-//                        return true;
-//                    if (get_flex(lns, curr_id, a.location,&(lns.neighbors)) <
-//                        get_flex(lns, curr_id, b.location,&(lns.neighbors)))
-//                        return false;
+            if ((a.heuristic + 1 + temp_op_a + (temp_vertex_a - 1) / 2) == wait_heuristic &&
+            (b.heuristic + 1 + temp_op_b + (temp_vertex_b - 1) / 2) != wait_heuristic)
+                return true;
+            else if ((a.heuristic + 1 + temp_op_a + (temp_vertex_a - 1) / 2) != wait_heuristic &&
+                (b.heuristic + 1 + temp_op_b + (temp_vertex_b - 1) / 2) == wait_heuristic)
+                return false;
+            else
+            {
+                if (a.heuristic == b.heuristic){
 
-					// random tie break
-					return a.tie_breaker < b.tie_breaker;
-			}
-			return a.heuristic < b.heuristic; 
-		});
+                    // random tie break
+                    return a.tie_breaker < b.tie_breaker;
+                }
+                return a.heuristic < b.heuristic;
+            }
+
+
+//            if (a.heuristic == b.heuristic){
+//                //tie break on prefer moving forward
+//                if (a.location==orien_next_v && b.location!=orien_next_v)
+//                    return true;
+//                if (a.location!=orien_next_v && b.location==orien_next_v)
+//                    return false;
+//                // random tie break
+//                return a.tie_breaker < b.tie_breaker;
+//            }
+//            return a.heuristic < b.heuristic;
+        });
 
 
     for (auto& next: successors){
@@ -175,23 +169,6 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
     return false;
 }
 
-//Action getAction(State& prev, State& next){
-//	if (prev.location == next.location && prev.orientation == next.orientation){
-//		return Action::W;
-//	}
-//	if (prev.location != next.location && prev.orientation == next.orientation){
-//		return Action::FW;
-//	}
-//	if (next.orientation  == (prev.orientation+1)%4){
-//		return Action::CR;
-//	}
-//	if (next.orientation  == (prev.orientation+3)%4){
-//		return Action::CCR;
-//	}
-//	assert(false);
-//	return Action::W;
-//}
-
 
 Action getAction(State& prev, int next_loc, SharedEnvironment* env){
     if (prev.location == next_loc){
@@ -211,63 +188,5 @@ Action getAction(State& prev, int next_loc, SharedEnvironment* env){
 
 }
 
-
-//Action getAction(State& prev, int next_loc, SharedEnvironment* env){
-//	if (prev.location == next_loc){
-//		return Action::W;
-//	}
-//	int diff = next_loc -prev.location;
-//	int orientation;
-//	if (diff == 1){
-//		orientation = 0;
-//	}
-//	if (diff == -1){
-//		orientation = 2;
-//	}
-//	if (diff == env->cols){
-//		orientation = 1;
-//	}
-//	if (diff == -env->cols){
-//		orientation = 3;
-//	}
-//	if (orientation == prev.orientation){
-//		return Action::FW;
-//	}
-//	if (orientation  == (prev.orientation+1)%4){
-//		return Action::CR;
-//	}
-//	if (orientation  == (prev.orientation+3)%4){
-//		return Action::CCR;
-//	}
-//	if (orientation  == (prev.orientation+2)%4){
-//		return Action::CR;
-//	}
-//	assert(false);
-//}
-
-
-//bool moveCheck(int id, std::vector<bool>& checked,
-//		std::vector<DCR>& decided, std::vector<Action>& actions, std::vector<int>& prev_decision){
-//	if (checked.at(id) && actions.at(id) == Action::FW)
-//		return true;
-//	checked.at(id) = true;
-//
-//	if (actions.at(id) != Action::FW)
-//		return false;
-//
-//	//move forward
-//	int target = decided.at(id).loc;
-//	assert(target != -1);
-//
-//	int na = prev_decision[target];
-//	if (na == -1)
-//		return true;
-//
-//	if (moveCheck(na,checked,decided,actions,prev_decision))
-//		return true;
-//	actions.at(id) = Action::W;
-//	return false;
-//
-//}
 
 }

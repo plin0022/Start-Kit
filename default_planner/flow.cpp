@@ -178,6 +178,8 @@ void update_traj(TrajLNS& lns, int i){
 //                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
+// directly use traffic_heuristic here
+
 
         lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
                                   lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
