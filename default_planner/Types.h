@@ -55,12 +55,9 @@ namespace DefaultPlanner{
 
 	struct HNode
 		{
-			int label;
 			int location;
-			int direction;
-			int value;
-			int other;
-            bool closed = false;
+			int g;
+            int h;
 
 			unsigned int priority;
 			unsigned int get_priority() const { return priority; }
@@ -68,29 +65,39 @@ namespace DefaultPlanner{
 
 
 			HNode() = default;
-			HNode(int location,int direction, int value) : location(location), direction(direction), value(value) {}
+			HNode(int location, int g, int h) : location(location), g(g), h(h) {}
 
-            bool is_closed() const { return closed; }
-            void close() { closed = true; }
 
-			// the following is used to compare nodes in the OPEN list
-			struct compare_node
-			{
-				bool operator()(const HNode& n1, const HNode& n2) const
-				{
-					return n1.value < n2.value;
-				}
-			};  // used by OPEN (open) to compare nodes (top of the open has min f-val, and then highest g-val)
 		};
 
 
-        struct compare_node
+//        struct compare_node
+//        {
+//            bool operator()(const HNode& n1, const HNode& n2) const
+//            {
+//                return (n1.g + n1.h) < (n2.g + n2.h);
+//            }
+//        };
+
+    struct compare_node
+    {
+        bool operator()(const HNode& n1, const HNode& n2) const
         {
-            bool operator()(const HNode& n1, const HNode& n2) const
-            {
-                return n1.value < n2.value;
-            }
-        };
+            return n1.g < n2.g;
+        }
+    };
+
+
+    struct THeuristicTable{
+
+        std::vector<int> traffic_htable;
+        pqueue<HNode, compare_node, min_q> traffic_open;
+        std::vector<bool> traffic_closed;
+
+        std::unordered_map<int, HNode*> node_list;
+
+
+    };
 
     struct HeuristicTable{
 		std::vector<int> htable;
@@ -102,14 +109,11 @@ namespace DefaultPlanner{
 
         // traffic
         std::vector<int> traffic_htable;
-        pqueue<HNode,compare_node, min_q> traffic_open;
+        pqueue<HNode, compare_node, min_q> traffic_open;
         std::vector<bool> traffic_closed;
 
         std::unordered_map<int, HNode*> node_list;
 
-        bool traffic_empty(){
-            return traffic_htable.empty();
-        }
 
 		bool empty(){
 			return htable.empty();

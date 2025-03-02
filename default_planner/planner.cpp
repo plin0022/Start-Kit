@@ -88,12 +88,13 @@ namespace DefaultPlanner{
         //traffic flow assignment end time, leave PIBT_RUNTIME_PER_100_AGENTS ms per 100 agent and TRAFFIC_FLOW_ASSIGNMENT_END_TIME_TOLERANCE ms for computing pibt actions;
         TimePoint end_time = start_time + std::chrono::milliseconds(time_limit - pibt_time - TRAFFIC_FLOW_ASSIGNMENT_END_TIME_TOLERANCE);
 
-        // recrod the initial location of each agent as dummy goals in case no goal is assigned to the agent.
+        // record the initial location of each agent as dummy goals in case no goal is assigned to the agent.
         if (env->curr_timestep == 0){
             dummy_goals.resize(env->num_of_agents);
             for(int i=0; i<env->num_of_agents; i++)
             {
                 dummy_goals.at(i) = env->curr_states.at(i).location;
+                trajLNS.start_locs[i] = env->curr_states.at(i).location;
             }
         }
 
@@ -127,13 +128,8 @@ namespace DefaultPlanner{
                         init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
                         count++;
                     }
-                    if (trajLNS.heuristics.at(goal_loc).traffic_empty())
-                    {
-                        init_traffic_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
-                    }
                 }
             }
-
 
 
             // set the goal location of each agent
@@ -144,6 +140,18 @@ namespace DefaultPlanner{
             else{
                 trajLNS.tasks[i] = env->goal_locations[i].front().first;
             }
+
+
+
+            // initialize the traffic_open if needed
+            int goal_loc = trajLNS.tasks[i];
+            if (trajLNS.heuristics.at(goal_loc).traffic_open.empty() &&
+                trajLNS.heuristics.at(goal_loc).traffic_closed.empty())
+            {
+                init_traffic_heuristic(trajLNS.heuristics[goal_loc], env,
+                                       goal_loc, trajLNS.start_locs[i]);
+            }
+
 
             // check if the agent need a guide path update, when the agent has no guide path or the guide path does not end at the goal location
             require_guide_path[i] = false;
@@ -191,7 +199,7 @@ namespace DefaultPlanner{
         }
 
         // iterate and recompute the guide path to optimise traffic flow
-        std::unordered_set<int> updated;
+//        std::unordered_set<int> updated;
 //        frank_wolfe(trajLNS, updated,end_time);
 
         // sort agents based on the current priority
@@ -242,16 +250,16 @@ namespace DefaultPlanner{
 
 
 
-//        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
-//        {
-//            int curr_goal = trajLNS.tasks.at(agent_i);
-//            if (prev_states[agent_i].location == curr_goal)
-//            {
-//                init_traffic_heuristic(trajLNS.heuristics[curr_goal], env, curr_goal);
-//            }
-//
-//        }
-
+        // clear traffic heuristics table when a goal is achieved and reset start_locs
+        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
+        {
+            int curr_goal = trajLNS.tasks.at(agent_i);
+            if (prev_states[agent_i].location == curr_goal)
+            {
+                clear_traffic_heuristic(trajLNS.heuristics[curr_goal]);
+                trajLNS.start_locs[agent_i] = curr_goal;
+            }
+        }
 
 
         return;

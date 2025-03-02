@@ -14,10 +14,10 @@ int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
     int min_heuristic;
 
 
-    if (!lns.heuristics[lns.tasks.at(ai)].traffic_empty())
+    if (!lns.heuristics[lns.tasks.at(ai)].traffic_closed.empty())
     {
         min_heuristic = get_traffic_heuristic(lns, lns.heuristics[lns.tasks.at(ai)],
-                                              lns.env, target, &(lns.neighbors));
+                                              lns.env, target, lns.start_locs[ai], &(lns.neighbors));
     }
     else
         min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
