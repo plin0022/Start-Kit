@@ -131,22 +131,14 @@ namespace DefaultPlanner{
 
 
             // initialize the traffic table
-//            int goal_loc = trajLNS.tasks[i];
-//            if (trajLNS.t_heuristics[i].traffic_open.empty() &&
-//                trajLNS.t_heuristics[i].traffic_closed.empty())
-//            {
-//                init_traffic_heuristic(trajLNS.t_heuristics[i], env,
-//                                       goal_loc, trajLNS.start_locs[i]);
-//            }
-
-
             int goal_loc = trajLNS.tasks[i];
-            if (trajLNS.t_heuristics[goal_loc].traffic_open.empty() &&
-                trajLNS.t_heuristics[goal_loc].traffic_closed.empty())
+            if (trajLNS.t_heuristics[i].traffic_open.empty() &&
+                trajLNS.t_heuristics[i].traffic_closed.empty())
             {
-                init_traffic_heuristic(trajLNS.t_heuristics[goal_loc], env,
+                init_traffic_heuristic(trajLNS.t_heuristics[i], env,
                                        goal_loc, trajLNS.start_locs[i]);
             }
+
 
 
             // check if the agent need a guide path update, when the agent has no guide path or the guide path does not end at the goal location
@@ -243,8 +235,7 @@ namespace DefaultPlanner{
             int curr_goal = trajLNS.tasks.at(agent_i);
             if (prev_states[agent_i].location == curr_goal)
             {
-                clear_traffic_heuristic(trajLNS.t_heuristics[curr_goal]);
-//                clear_traffic_heuristic(trajLNS.t_heuristics[agent_i]);
+                clear_traffic_heuristic(trajLNS.t_heuristics[agent_i]);
                 trajLNS.start_locs[agent_i] = curr_goal;
             }
         }

@@ -184,7 +184,6 @@ int get_traffic_heuristic(TrajLNS& lns, THeuristicTable& ht, SharedEnvironment* 
 
             cost = curr_g + 1 + temp_op + (temp_vertex - 1) / 2;
 
-//            cost = curr_g + 1;
 
             assert(next >= 0 && next < env->map.size());
 

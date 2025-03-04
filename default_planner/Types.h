@@ -71,21 +71,21 @@ namespace DefaultPlanner{
 		};
 
 
-//        struct compare_node
-//        {
-//            bool operator()(const HNode& n1, const HNode& n2) const
-//            {
-//                return (n1.g + n1.h) < (n2.g + n2.h);
-//            }
-//        };
-
-    struct compare_node
-    {
-        bool operator()(const HNode& n1, const HNode& n2) const
+        struct compare_node
         {
-            return n1.g < n2.g;
-        }
-    };
+            bool operator()(const HNode& n1, const HNode& n2) const
+            {
+                return (n1.g + n1.h) < (n2.g + n2.h);
+            }
+        };
+
+//    struct compare_node
+//    {
+//        bool operator()(const HNode& n1, const HNode& n2) const
+//        {
+//            return n1.g < n2.g;
+//        }
+//    };
 
 
     struct THeuristicTable{
