@@ -103,17 +103,6 @@ namespace DefaultPlanner{
 		std::vector<int> htable;
 		std::deque<HNode> open;
 
-        // flexibility
-        std::vector<uint> flex_table;
-
-
-        // traffic
-        std::vector<int> traffic_htable;
-        pqueue<HNode, compare_node, min_q> traffic_open;
-        std::vector<bool> traffic_closed;
-
-        std::unordered_map<int, HNode*> node_list;
-
 
 		bool empty(){
 			return htable.empty();

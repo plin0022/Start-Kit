@@ -106,20 +106,8 @@ namespace DefaultPlanner{
         int count = 0;
         for(int i=0; i<env->num_of_agents; i++)
         {
+
             //initialise the shortest distance heuristic table for the goal location of the agent
-//            if ( ( std::chrono::steady_clock::now() < end_time) ){
-//                for(int j=0; j<env->goal_locations[i].size(); j++)
-//                {
-//                    int goal_loc = env->goal_locations[i][j].first;
-//                    if (trajLNS.heuristics.at(goal_loc).empty()){
-//                        init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
-//                        init_flextable(trajLNS.heuristics[goal_loc],env,goal_loc);
-//                        count++;
-//                    }
-//                }
-//            }
-
-
             if ( ( std::chrono::steady_clock::now() < end_time) ){
                 for(int j=0; j<env->goal_locations[i].size(); j++)
                 {
@@ -142,13 +130,21 @@ namespace DefaultPlanner{
             }
 
 
+            // initialize the traffic table
+//            int goal_loc = trajLNS.tasks[i];
+//            if (trajLNS.t_heuristics[i].traffic_open.empty() &&
+//                trajLNS.t_heuristics[i].traffic_closed.empty())
+//            {
+//                init_traffic_heuristic(trajLNS.t_heuristics[i], env,
+//                                       goal_loc, trajLNS.start_locs[i]);
+//            }
 
-            // initialize the traffic_open if needed
+
             int goal_loc = trajLNS.tasks[i];
-            if (trajLNS.heuristics.at(goal_loc).traffic_open.empty() &&
-                trajLNS.heuristics.at(goal_loc).traffic_closed.empty())
+            if (trajLNS.t_heuristics[goal_loc].traffic_open.empty() &&
+                trajLNS.t_heuristics[goal_loc].traffic_closed.empty())
             {
-                init_traffic_heuristic(trajLNS.heuristics[goal_loc], env,
+                init_traffic_heuristic(trajLNS.t_heuristics[goal_loc], env,
                                        goal_loc, trajLNS.start_locs[i]);
             }
 
@@ -240,15 +236,6 @@ namespace DefaultPlanner{
         prev_states = next_states;
 
 
-//        // clear flex_table for those arrive goals
-//        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
-//        {
-//            int curr_goal = trajLNS.tasks.at(agent_i);
-//            if (prev_states[agent_i].location == curr_goal)
-//                init_flextable(trajLNS.heuristics[curr_goal], env, curr_goal);
-//        }
-
-
 
         // clear traffic heuristics table when a goal is achieved and reset start_locs
         for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
@@ -256,7 +243,8 @@ namespace DefaultPlanner{
             int curr_goal = trajLNS.tasks.at(agent_i);
             if (prev_states[agent_i].location == curr_goal)
             {
-                clear_traffic_heuristic(trajLNS.heuristics[curr_goal]);
+                clear_traffic_heuristic(trajLNS.t_heuristics[curr_goal]);
+//                clear_traffic_heuristic(trajLNS.t_heuristics[agent_i]);
                 trajLNS.start_locs[agent_i] = curr_goal;
             }
         }

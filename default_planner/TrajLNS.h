@@ -93,7 +93,8 @@ class TrajLNS{
         start_locs(env->num_of_agents),
         flow(env->map.size(),Int4({0,0,0,0})),
         heuristics(heuristics),
-        t_heuristics(env->num_of_agents),
+        t_heuristics(env->map.size()),
+//        t_heuristics(env->num_of_agents),
         traj_dists(env->num_of_agents),goal_nodes(env->num_of_agents),
         fw_metrics(env->num_of_agents),neighbors(neighbors){
         };
