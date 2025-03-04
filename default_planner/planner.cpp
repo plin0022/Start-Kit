@@ -54,8 +54,8 @@ namespace DefaultPlanner{
             srand(0);
 
             new (&trajLNS) TrajLNS(env, global_heuristictable, global_neighbors);
-//            trajLNS.init_mem();
-
+            trajLNS.init_mem();
+            
             trajLNS.init_all_mem();
 
             //assign intial priority to each agent
@@ -132,14 +132,15 @@ namespace DefaultPlanner{
             }
 
 
+
             // initialize the traffic table
             int goal_loc = trajLNS.tasks[i];
-            if (trajLNS.t_heuristics[i].traffic_open.empty() &&
-                trajLNS.t_heuristics[i].traffic_closed.empty())
+            if (trajLNS.flow_heuristics[i].empty())
             {
-                init_traffic_heuristic(trajLNS.t_heuristics[i], env,
+                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
                                        goal_loc, trajLNS.start_locs[i]);
             }
+
 
 
 
@@ -237,7 +238,7 @@ namespace DefaultPlanner{
             int curr_goal = trajLNS.tasks.at(agent_i);
             if (prev_states[agent_i].location == curr_goal)
             {
-                clear_traffic_heuristic(trajLNS.t_heuristics[agent_i]);
+                trajLNS.flow_heuristics[agent_i].reset();
                 trajLNS.start_locs[agent_i] = curr_goal;
             }
         }

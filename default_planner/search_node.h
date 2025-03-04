@@ -114,7 +114,9 @@ struct re_of{ //re-expansion rule astar
     }
 };
 
-struct cmp_less_of //astar open 
+
+
+struct cmp_less_of //astar open
 {
     inline bool operator()(const s_node& lhs, const s_node& rhs) const
     {
@@ -139,6 +141,16 @@ struct cmp_less_of //astar open
 
     }
 };
+
+
+    struct cmp_less_of_123 //astar open
+    {
+        inline bool operator()(const s_node& lhs, const s_node& rhs) const
+        {
+            return lhs.get_f() < rhs.get_f();
+        }
+    };
+
 
 
 }

@@ -24,12 +24,14 @@ void init_flextable(HeuristicTable& ht, SharedEnvironment* env, int goal_locatio
 
 int get_heuristic(HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns);
 
+
+
 // traffic
-void clear_traffic_heuristic(THeuristicTable& ht);
 
-void init_traffic_heuristic(THeuristicTable& ht, SharedEnvironment* env, int goal, int start);
+void init_traffic_heuristic(FlowHeuristic& ht, SharedEnvironment* env, int goal, int start);
 
-int get_traffic_heuristic(TrajLNS& lns, THeuristicTable& ht, SharedEnvironment* env,
+
+int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,
                           int source, int start, Neighbors* ns);
 
 //

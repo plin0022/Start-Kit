@@ -28,20 +28,24 @@ struct FW_Metric{
 };
 
 struct FlowHeuristic{
-    HeuristicTable* h; 
     int target;
     int origin;
-    pqueue_min_of open;
+    std::vector<int> htable;  // record the h_value
+
+    pqueue<s_node,cmp_less_of_123, min_q> open;
+
+//    pqueue_min_of open;       // priority queue
     MemoryPool mem;
 
 
+
+
     bool empty(){
-        return mem.generated() == 0;
+        return htable.empty() && open.empty();
     }
+
     void reset(){
-        // op_flows.clear();
-        // depths.clear();
-        // dists.clear();
+        htable.clear();
         open.clear();
         mem.reset();
     }
