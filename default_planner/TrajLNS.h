@@ -67,6 +67,8 @@ class TrajLNS{
 
     std::vector<HeuristicTable>& heuristics;
 
+    std::vector<FlowHeuristic> flow_heuristics;
+
     std::vector<THeuristicTable> t_heuristics;
 
     std::vector<Dist2Path> traj_dists;
@@ -86,6 +88,14 @@ class TrajLNS{
         mem.init(env->map.size());
     }
 
+    void init_all_mem()
+    {
+        for (int i = 0; i < env->num_of_agents; i++)
+        {
+            flow_heuristics[i].mem.init(env->map.size());
+        }
+    }
+
     TrajLNS(SharedEnvironment* env, std::vector<HeuristicTable>& heuristics, Neighbors& neighbors):
         env(env),
         trajs(env->num_of_agents),
@@ -93,6 +103,7 @@ class TrajLNS{
         start_locs(env->num_of_agents),
         flow(env->map.size(),Int4({0,0,0,0})),
         heuristics(heuristics),
+        flow_heuristics(env->num_of_agents),
         t_heuristics(env->num_of_agents),
         traj_dists(env->num_of_agents),goal_nodes(env->num_of_agents),
         fw_metrics(env->num_of_agents),neighbors(neighbors){

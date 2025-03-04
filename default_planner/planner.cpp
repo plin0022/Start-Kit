@@ -54,7 +54,9 @@ namespace DefaultPlanner{
             srand(0);
 
             new (&trajLNS) TrajLNS(env, global_heuristictable, global_neighbors);
-            trajLNS.init_mem();
+//            trajLNS.init_mem();
+
+            trajLNS.init_all_mem();
 
             //assign intial priority to each agent
             std::shuffle(ids.begin(), ids.end(), mt1);
