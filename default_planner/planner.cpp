@@ -146,8 +146,12 @@ namespace DefaultPlanner{
 
             // check if the agent need a guide path update, when the agent has no guide path or the guide path does not end at the goal location
             require_guide_path[i] = false;
-            if (trajLNS.trajs[i].empty() || trajLNS.trajs[i].back() != trajLNS.tasks[i])
-                    require_guide_path[i] = true;
+//            if (trajLNS.trajs[i].empty() || trajLNS.trajs[i].back() != trajLNS.tasks[i])
+//                    require_guide_path[i] = true;
+
+            if (trajLNS.mdd_trajs[i].empty())
+                require_guide_path[i] = true;
+
 
             // check if the agent completed the action in the previous timestep
             // if not, the agent is till turning towards the action direction, we do not need to plan new action for the agent
@@ -182,8 +186,15 @@ namespace DefaultPlanner{
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
-                if (!trajLNS.trajs[i].empty())
-                    remove_traj(trajLNS, i);
+//                if (!trajLNS.trajs[i].empty())
+//                    remove_traj(trajLNS, i);
+
+                if (!trajLNS.mdd_trajs[i].empty())
+                {
+                    assert(false);
+                    remove_mdd_traj(trajLNS, i, trajLNS.start_locs[i]);
+                }
+
                 update_traj(trajLNS, i);
             }
 
@@ -239,6 +250,9 @@ namespace DefaultPlanner{
             if (prev_states[agent_i].location == curr_goal)
             {
                 trajLNS.flow_heuristics[agent_i].reset();
+
+                remove_mdd_traj(trajLNS, agent_i, trajLNS.start_locs[agent_i]);
+
                 trajLNS.start_locs[agent_i] = curr_goal;
             }
         }

@@ -35,6 +35,31 @@ void remove_traj(TrajLNS& lns, int agent){
     }
 }
 
+
+void remove_mdd_traj(TrajLNS& lns, int agent, int start){
+    int loc, prev_loc, diff, d;
+    float weight;
+
+    for (auto each : lns.mdd_trajs[agent])
+    {
+        if (each.first == start) continue;
+
+        loc = each.first;
+        weight = each.second.first / each.second.second.size();
+        for (auto id: each.second.second)
+        {
+            prev_loc = id;
+            diff = loc - prev_loc;
+            d = get_d(diff, lns.env);
+            lns.float_flow[prev_loc].d[d] -= weight;
+        }
+    }
+
+    lns.mdd_trajs[agent].clear();
+
+
+}
+
 void add_traj(TrajLNS& lns, int agent){
 
     //update last replan time for agent
@@ -165,6 +190,8 @@ void update_traj(TrajLNS& lns, int i){
     int start = lns.env->curr_states[i].location;
     int goal = lns.tasks[i];
 
+    if (lns.start_locs[i] != start)
+        assert(false);
 
 //    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal], lns.heuristics,
 //                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
@@ -181,12 +208,17 @@ void update_traj(TrajLNS& lns, int i){
 // directly use traffic_heuristic here
 
 
-        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
+//                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
-    add_traj(lns,i);
-    update_dist_2_path(lns,i);
+        // MDD version
+        lns.goal_nodes[i] = astar(lns.env,lns.float_flow, lns.heuristics[goal],
+                                  lns.mdd_trajs[i],lns.mem,start,goal, &(lns.neighbors));
+
+
+//    add_traj(lns,i);
+//    update_dist_2_path(lns,i);
 }
 
 }

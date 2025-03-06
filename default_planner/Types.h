@@ -27,6 +27,10 @@ namespace DefaultPlanner{
 		DONE
 	};
 
+    struct Float4{
+        float d[4];
+    };
+
 	struct Int4{
 		int d[4];
 	};
@@ -41,6 +45,9 @@ namespace DefaultPlanner{
 	};
 
 	typedef std::vector<int> Traj;
+
+    // each agent's MDD trajectory, first int is tile_id, second int is the weight it carries
+    typedef std::unordered_map<int, pair<float, std::vector<int>>> MDD_Traj;
 
 	struct PIBT_C{
 		int location;

@@ -64,10 +64,13 @@ class TrajLNS{
 
     std::vector<Traj> trajs;
 
+    std::vector<MDD_Traj> mdd_trajs;
+
     std::vector<std::pair<int,int>> deviation_agents;
 
     std::vector<Int4> flow;
 
+    std::vector<Float4> float_flow;
 
     std::vector<HeuristicTable>& heuristics;
 
@@ -103,9 +106,11 @@ class TrajLNS{
     TrajLNS(SharedEnvironment* env, std::vector<HeuristicTable>& heuristics, Neighbors& neighbors):
         env(env),
         trajs(env->num_of_agents),
+        mdd_trajs(env->num_of_agents),
         tasks(env->num_of_agents),
         start_locs(env->num_of_agents),
         flow(env->map.size(),Int4({0,0,0,0})),
+        float_flow(env->map.size(), Float4({0,0,0,0})),
         heuristics(heuristics),
         flow_heuristics(env->num_of_agents),
         t_heuristics(env->num_of_agents),
