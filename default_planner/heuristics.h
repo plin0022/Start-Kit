@@ -31,7 +31,7 @@ int get_heuristic(HeuristicTable& ht, SharedEnvironment* env, int source, Neighb
 void init_traffic_heuristic(FlowHeuristic& ht, SharedEnvironment* env, int goal, int start);
 
 
-int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,
+float get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,
                           int source, int start, Neighbors* ns);
 
 //

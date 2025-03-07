@@ -110,15 +110,18 @@ void init_traffic_heuristic(FlowHeuristic& ht, SharedEnvironment* env, int goal,
 
 // Reverse Resumable A*
 // https://doi.org/10.1609/aiide.v1i1.18726
-int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,
+float get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,
                           int source, int start, Neighbors* ns)
 {
     if (ht.mem.has_node(source) && ht.mem.get_node(source)->is_closed())
         return ht.htable[source];
 
+    large_than_fmin large;
 
     std::vector<int> neighbors;
-    int cost, h, diff, d, temp_op, temp_vertex;
+    int h, diff, d;
+    float cost, temp_op, temp_vertex;
+
 
     while (!ht.open.empty())
     {
@@ -134,14 +137,14 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
             diff = curr->id - next;
             d = get_d(diff, env);
 
-            temp_op = ((lns.flow[next].d[d] + 1) *
-                       lns.flow[curr->id].d[(d + 2) % 4]);
+            temp_op = ((lns.float_flow[next].d[d] + 1) *
+                       lns.float_flow[curr->id].d[(d + 2) % 4]);
 
             //all vertex flow
             //the sum of all out going edge flow is the same as the total number of vertex visiting.
             temp_vertex = 1;
             for (int j = 0; j < 4; j++) {
-                temp_vertex += lns.flow[curr->id].d[j];
+                temp_vertex += lns.float_flow[curr->id].d[j];
             }
 
 
@@ -172,7 +175,7 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
 
                 if (!existing->is_closed())
                 {
-                    if (cost < existing->g)
+                    if (large(*existing, cost))
                     {
                         existing->g = cost;
                         ht.htable[next] = cost;
@@ -181,7 +184,7 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
                 }
                 else
                 {
-                    if (cost < existing->g)
+                    if (large(*existing, cost))
                     {
                         std::cout << "error in astar: re-expansion" << std::endl;
                         assert(false);

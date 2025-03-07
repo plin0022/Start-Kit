@@ -30,7 +30,7 @@ struct FW_Metric{
 struct FlowHeuristic{
     int target;
     int origin;
-    std::vector<int> htable;  // record the h_value
+    std::vector<float> htable;  // record the h_value
 
     pqueue<s_node,cmp_less_of_123, min_q> open;
 

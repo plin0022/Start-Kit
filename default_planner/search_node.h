@@ -3,16 +3,20 @@
 
 #include <vector>
 #include <iostream>
+#include <cmath>
+
 
 namespace DefaultPlanner{
 struct s_node
 {
     int label = 0;
     int id = -1; //also location, -1 indicated not generated yet.
-    int g = 0;
+    float g = 0;
     int h = 0;
-    int op_flow = 0;
-    int all_vertex_flow = 0;
+    float op_flow = 0;
+    float all_vertex_flow = 0;
+//    int op_flow = 0;
+//    int all_vertex_flow = 0;
     bool closed = false;
     int depth = 0;
     double tie_breaker = 0;
@@ -20,24 +24,33 @@ struct s_node
 
     // parents and children
     std::unordered_map<int, s_node*> parents;
-    std::unordered_map<int, s_node*> children;
 
     unsigned int priority;
 
-
-    s_node(int id, int g, int h, int op_flow, int depth) : id(id), g(g), h(h), op_flow(op_flow),depth(depth) {};
+    s_node(int id, int g, int h, float op_flow, int depth) : id(id), g(g), h(h), op_flow(op_flow),depth(depth) {};
+//    s_node(int id, int g, int h, int op_flow, int depth) : id(id), g(g), h(h), op_flow(op_flow),depth(depth) {};
     s_node() = default;
 
-    int get_f() const { return g + h; }
+    float get_f() const { return g + h; }
     bool is_closed() const { return closed; }
     void close() { closed = true; }
-    int get_op_flow() const { return op_flow; }
-    int get_all_vertex_flow() const { return all_vertex_flow; }
-    void set_all_flow(int op_flow,  int all_vertex_flow){
+
+
+    float get_op_flow() const { return op_flow; }
+    float get_all_vertex_flow() const { return all_vertex_flow; }
+    void set_all_flow(float op_flow,  float all_vertex_flow){
         this->op_flow = op_flow;
         this->all_vertex_flow = all_vertex_flow;
     };
-    int get_g() const { return g; }
+
+//    int get_op_flow() const { return op_flow; }
+//    int get_all_vertex_flow() const { return all_vertex_flow; }
+//    void set_all_flow(int op_flow,  int all_vertex_flow){
+//        this->op_flow = op_flow;
+//        this->all_vertex_flow = all_vertex_flow;
+//    };
+
+    float get_g() const { return g; }
     int get_h() const { return h; }
     unsigned int get_priority() const { return priority; }
     void set_priority(unsigned int p) { priority = p; }
@@ -55,7 +68,6 @@ struct s_node
         tie_breaker = 0;
 
         parents.clear();
-        children.clear();
     }
     /* data */
 };
@@ -143,14 +155,80 @@ struct cmp_less_of //astar open
 };
 
 
+
+// new comparison operator
+
+
+
     struct cmp_less_of_123 //astar open
     {
         inline bool operator()(const s_node& lhs, const s_node& rhs) const
         {
+            const float EPSILON = 1e-6;
+            float diff = lhs.get_op_flow() + lhs.get_all_vertex_flow() + lhs.get_f() -
+                         (rhs.get_op_flow()+ rhs.get_all_vertex_flow() + rhs.get_f());
+
+            return diff < -EPSILON;
             return lhs.get_f() < rhs.get_f();
         }
     };
 
+
+    struct large_than_fmin {
+        inline bool operator()(const s_node& lhs, float fmin) const {
+            const float EPSILON = 1e-6;
+            float lhs_value = lhs.get_g();
+            float diff = lhs_value - fmin;
+
+            return diff > EPSILON;
+        }
+    };
+
+
+
+    struct re_of_float{
+        inline bool operator()(const s_node& lhs, const s_node& rhs) const
+        {
+            const float EPSILON = 1e-6;
+            float diff = lhs.get_op_flow() + lhs.get_all_vertex_flow() + lhs.get_f() -
+                    (rhs.get_op_flow()+ rhs.get_all_vertex_flow() + rhs.get_f());
+
+            return diff < -EPSILON;
+
+        }
+    };
+
+    struct same_of_float{
+        inline bool operator()(const s_node& lhs, const s_node& rhs) const
+        {
+            const float EPSILON = 1e-6;
+            float diff = lhs.get_op_flow() + lhs.get_all_vertex_flow() + lhs.get_f() -
+                         (rhs.get_op_flow()+ rhs.get_all_vertex_flow() + rhs.get_f());
+
+            return std::fabs(diff) < EPSILON;
+
+        }
+    };
+
+
+    struct small_than_fmin {
+        inline bool operator()(const s_node& lhs, float fmin) const {
+            const float EPSILON = 1e-6;
+            float lhs_value = lhs.get_op_flow() + lhs.get_all_vertex_flow() + lhs.get_f();
+            float diff = lhs_value - fmin;
+
+            return diff < -EPSILON;
+        }
+    };
+
+    struct same_with_fmin {
+        inline bool operator()(const s_node& lhs, float fmin) const {
+            const float EPSILON = 1e-6;
+            float lhs_value = lhs.get_op_flow() + lhs.get_all_vertex_flow() + lhs.get_f();
+
+            return std::fabs(lhs_value - fmin) < EPSILON;
+        }
+    };
 
 
 }

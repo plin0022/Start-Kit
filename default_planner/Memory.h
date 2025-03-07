@@ -81,13 +81,14 @@ public:
         }
         nodes[id].close();
     }
-    s_node* generate_node(int id, int g, int h, int op_flow, int depth, int all_vertex_flow = 0){
+
+    s_node* generate_node(int id, float g, int h, float op_flow, int depth, float all_vertex_flow = 0){
         if (id >= size)
         {
             std::cout << "range out of memory pool size "<< id<<","<<index<<","<<size << std::endl;
             exit(1);
         }
-        
+
         if (nodes[id].label == label && nodes[id].id != -1){
             std::cout << "node already generated " << id << ","<< is_ready()<< std::endl;
 
@@ -105,6 +106,31 @@ public:
         index++;
         return &(nodes[id]);
     }
+
+//    s_node* generate_node(int id, int g, int h, int op_flow, int depth, int all_vertex_flow = 0){
+//        if (id >= size)
+//        {
+//            std::cout << "range out of memory pool size "<< id<<","<<index<<","<<size << std::endl;
+//            exit(1);
+//        }
+//
+//        if (nodes[id].label == label && nodes[id].id != -1){
+//            std::cout << "node already generated " << id << ","<< is_ready()<< std::endl;
+//
+//            std::cout << "node already generated " << nodes[id].id<< std::endl;
+//            exit(1);
+//        }
+//        nodes[id].reset();
+//        nodes[id].label = label;
+//        nodes[id].id = id;
+//        nodes[id].g = g;
+//        nodes[id].h = h;
+//        nodes[id].op_flow = op_flow;
+//        nodes[id].depth = depth;
+//        nodes[id].all_vertex_flow = all_vertex_flow;
+//        index++;
+//        return &(nodes[id]);
+//    }
 
     void free_node(int id){
         if (id >= size)

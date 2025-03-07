@@ -46,6 +46,7 @@ void remove_mdd_traj(TrajLNS& lns, int agent, int start){
 
         loc = each.first;
         weight = each.second.first / each.second.second.size();
+
         for (auto id: each.second.second)
         {
             prev_loc = id;
@@ -192,17 +193,6 @@ void update_traj(TrajLNS& lns, int i){
 
     if (lns.start_locs[i] != start)
         assert(false);
-
-//    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal], lns.heuristics,
-//                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
-
-//        astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal],
-//              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
-
-//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.flow_time,lns.heuristics[goal],
-//                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
 // directly use traffic_heuristic here

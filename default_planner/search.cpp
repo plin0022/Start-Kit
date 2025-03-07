@@ -19,9 +19,6 @@ namespace DefaultPlanner {
         int generated = 0;
         int h;
 
-        // variable for MDD paths
-        int f_min;
-        bool goal_found_flag = false;
 
 
         if (ht.empty())
@@ -33,6 +30,7 @@ namespace DefaultPlanner {
 
         s_node *root = mem.generate_node(start, 0, h, 0, 0, 0);
 
+
         if (start == goal) {
             traj.clear();
             traj[start] = {0, {}};
@@ -40,14 +38,29 @@ namespace DefaultPlanner {
         }
 
         pqueue_min_of open;
-        re_of re;
+
+//        re_of re;
+        re_of_float re;
+
+        same_of_float same;
+
+        small_than_fmin small_fmin;
+
+        same_with_fmin same_fmin;
+
+
 
         open.push(root);
 
-        int diff, d, cost, op_flow, total_cross, all_vertex_flow, vertex_flow, depth, p_diff, p_d;
-        int next_d1, next_d2, next_d1_loc, next_d2_loc;
-        int temp_op, temp_vertex;
-        double tie_breaker, decay_factor;
+        int diff, d, cost, depth, p_diff, p_d;
+        float op_flow, all_vertex_flow, temp_op, temp_vertex;
+        double tie_breaker;
+
+        // variable for MDD paths
+        float f_min;
+        bool goal_found_flag = false;
+
+
 
         s_node *goal_node = nullptr;
         int neighbors[4];
@@ -174,13 +187,9 @@ namespace DefaultPlanner {
                                 existing->set_all_flow(op_flow, all_vertex_flow);
                                 open.decrease_key(existing);
                             }
-
                             // the same cost but a different parent
-                            else if (temp_node.get_f() + temp_node.get_op_flow() + temp_node.get_all_vertex_flow() ==
-                            existing->get_f() + existing->get_op_flow() + existing->get_all_vertex_flow())
-                            {
+                            else if (same(temp_node, *existing))
                                 existing->parents[curr->id] = curr;
-                            }
                         }
                         else {
                             if (re(temp_node, *existing)) {
@@ -188,25 +197,22 @@ namespace DefaultPlanner {
                                 assert(false);
                                 exit(1);
                             }
-
                             // the same cost but a different parent
-                            else if (temp_node.get_f() + temp_node.get_op_flow() + temp_node.get_all_vertex_flow() ==
-                                existing->get_f() + existing->get_op_flow() + existing->get_all_vertex_flow())
-                            {
+                            else if (same(temp_node, *existing))
                                 existing->parents[curr->id] = curr;
-                            }
                         }
                     }
                 }
                 else
                 {
-                    if (temp_node.get_f() + temp_node.get_op_flow() + temp_node.get_all_vertex_flow() < f_min)
+                    if (small_fmin(temp_node, f_min))
                     {
                         std::cout << "error" << std::endl;
                         assert(false);
                         exit(1);
                     }
-                    if (temp_node.get_f() + temp_node.get_op_flow() + temp_node.get_all_vertex_flow() == f_min)
+
+                    if (same_fmin(temp_node, f_min))
                     {
                         if (!mem.has_node(next)) {
                             s_node *next_node = mem.generate_node(next, cost, h, op_flow, depth, all_vertex_flow);
@@ -237,13 +243,9 @@ namespace DefaultPlanner {
                                     existing->set_all_flow(op_flow, all_vertex_flow);
                                     open.decrease_key(existing);
                                 }
-
                                 // the same cost but a different parent
-                                else if (temp_node.get_f() + temp_node.get_op_flow() + temp_node.get_all_vertex_flow() ==
-                                    existing->get_f() + existing->get_op_flow() + existing->get_all_vertex_flow())
-                                {
+                                else if (same(temp_node, *existing))
                                     existing->parents[curr->id] = curr;
-                                }
                             }
                             else {
                                 if (re(temp_node, *existing)) {
@@ -251,17 +253,14 @@ namespace DefaultPlanner {
                                     assert(false);
                                     exit(1);
                                 }
-
                                 // the same cost but a different parent
-                                else if (temp_node.get_f() + temp_node.get_op_flow() + temp_node.get_all_vertex_flow() ==
-                                    existing->get_f() + existing->get_op_flow() + existing->get_all_vertex_flow())
-                                {
+                                else if (same(temp_node, *existing))
                                     existing->parents[curr->id] = curr;
-                                }
                             }
 
                         }
                     }
+
                 }
 
 
@@ -279,7 +278,7 @@ namespace DefaultPlanner {
 
 
         // define the weight in goal
-        float weight = 1000;
+        float weight = 1;
         float curr_weight, next_weight;
         int next_loc, prev_loc, loc_diff, loc_d;
 
@@ -330,12 +329,7 @@ namespace DefaultPlanner {
             }
         }
 
-        if (traj[start].first != traj[goal].first)
-        {
-            int xxx = traj[start].first;
-            int yyy = traj[goal].first;
-            assert(false);
-        }
+
 
 
         return *goal_node;

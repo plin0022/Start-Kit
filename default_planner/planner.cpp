@@ -183,6 +183,7 @@ namespace DefaultPlanner{
 
         // compute the congestion minimised guide path for the agents that need guide path update
         for (int i = 0; i < env->num_of_agents;i++){
+
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
