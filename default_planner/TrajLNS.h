@@ -27,9 +27,8 @@ struct FW_Metric{
     FW_Metric(){};
 };
 
+
 struct FlowHeuristic{
-    int target;
-    int origin;
     std::vector<int> htable;  // record the h_value
 
     pqueue<s_node,cmp_less_of_123, min_q> open;
@@ -73,7 +72,6 @@ class TrajLNS{
 
     std::vector<FlowHeuristic> flow_heuristics;
 
-    std::vector<THeuristicTable> t_heuristics;
 
     std::vector<Dist2Path> traj_dists;
     std::vector<s_node> goal_nodes;// store the goal node of single agent search for each agent. contains all cost information.
@@ -108,7 +106,6 @@ class TrajLNS{
         flow(env->map.size(),Int4({0,0,0,0})),
         heuristics(heuristics),
         flow_heuristics(env->num_of_agents),
-        t_heuristics(env->num_of_agents),
         traj_dists(env->num_of_agents),goal_nodes(env->num_of_agents),
         fw_metrics(env->num_of_agents),neighbors(neighbors){
         };

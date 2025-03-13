@@ -124,7 +124,6 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
     {
         s_node *curr = ht.open.pop();
         assert(ht.htable[curr->id] == curr->g);
-        ht.htable[curr->id] = curr->g;
         curr->close();
 
 
@@ -198,7 +197,6 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
     }
 
     assert(false);
-    return MAX_TIMESTEP;
 }
 
 
