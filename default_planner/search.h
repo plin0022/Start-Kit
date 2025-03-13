@@ -18,10 +18,9 @@ s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
     MemoryPool& mem, int start, int goal, Neighbors* ns);
 
 
-    s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
-                 std::vector<std::vector<std::pair<int, Int4>>>& flow_time,
-                 HeuristicTable& ht, Traj& traj,
-                 MemoryPool& mem, int start, int goal, Neighbors* ns);
+    s_node backward_astar(SharedEnvironment* env, std::vector<Int4>& flow, Traj& traj, FlowHeuristic& fh,
+                          MemoryPool& mem, int start, int goal, Neighbors* ns);
+
 
 
 }

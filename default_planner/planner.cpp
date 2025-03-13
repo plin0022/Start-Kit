@@ -133,13 +133,13 @@ namespace DefaultPlanner{
 
 
 
-            // initialize the traffic table
-            int goal_loc = trajLNS.tasks[i];
-            if (trajLNS.flow_heuristics[i].empty())
-            {
-                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
-                                       goal_loc, trajLNS.start_locs[i]);
-            }
+//            // initialize the traffic table
+//            int goal_loc = trajLNS.tasks[i];
+//            if (trajLNS.flow_heuristics[i].empty())
+//            {
+//                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
+//                                       goal_loc, trajLNS.start_locs[i]);
+//            }
 
 
 

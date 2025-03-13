@@ -149,10 +149,6 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
 
             h = manhattanDistance(next, start, env);
 
-//            if (ht.empty())
-//                h = manhattanDistance(next, start, env);
-//            else
-//                h = get_heuristic(ht, env, next, ns);
 
 
             assert(next >= 0 && next < env->map.size());
@@ -199,96 +195,6 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
     assert(false);
 }
 
-
-
-//// Reverse Resumable A*
-//// https://doi.org/10.1609/aiide.v1i1.18726
-//int get_traffic_heuristic(TrajLNS& lns, THeuristicTable& ht, SharedEnvironment* env,
-//                          int source, int start, Neighbors* ns)
-//{
-//    if (ht.traffic_closed[source]) return ht.traffic_htable[source];
-//
-//    std::vector<int> neighbors;
-//    int cost, diff, d, temp_op, temp_vertex, curr_location, curr_g;
-//
-//    while (!ht.traffic_open.empty())
-//    {
-//        // free memory and remove the entry in map for a closed node
-//        HNode *curr = ht.traffic_open.pop();
-//        curr_location = curr->location;
-//        curr_g = curr->g;
-//        ht.traffic_htable[curr_location] = curr_g;
-//        ht.traffic_closed[curr_location] = true;
-//        delete curr;
-//        ht.node_list.erase(curr_location);
-//
-//
-//        getNeighborLocs(ns,neighbors, curr_location);
-//
-//
-//        for (int next : neighbors)
-//        {
-//            diff = curr_location - next;
-//            d = get_d(diff, env);
-//
-//            temp_op = ((lns.flow[next].d[d] + 1) *
-//                       lns.flow[curr_location].d[(d + 2) % 4]);
-//
-//            //all vertex flow
-//            //the sum of all out going edge flow is the same as the total number of vertex visiting.
-//            temp_vertex = 1;
-//            for (int j = 0; j < 4; j++) {
-//                temp_vertex += lns.flow[curr_location].d[j];
-//            }
-//
-//            //set current cost for reversed direction
-//
-//            cost = curr_g + 1 + temp_op + (temp_vertex - 1) / 2;
-//
-//
-//            assert(next >= 0 && next < env->map.size());
-//
-//
-//            if (ht.traffic_htable[next] == MAX_TIMESTEP)
-//            {
-//                HNode* next_node = new HNode(next, cost, manhattanDistance(start, next, env));
-//                ht.traffic_open.push(next_node);
-//                ht.traffic_htable[next] = cost;
-//                ht.node_list[next] = next_node;
-//            }
-//            else
-//            {
-//                if (!ht.traffic_closed[next])
-//                {
-//                    if (cost < ht.traffic_htable[next])
-//                    {
-//                        HNode* existing = ht.node_list[next];
-//                        existing->g = cost;
-//                        ht.traffic_htable[next] = cost;
-//                        ht.traffic_open.decrease_key(existing);
-//                    }
-//                }
-//                else
-//                {
-//                    if (cost < ht.traffic_htable[next])
-//                    {
-//                        std::cout << "error in astar: re-expansion" << std::endl;
-//                        assert(false);
-//                        exit(1);
-//                    }
-//                }
-//            }
-//
-//        }
-//
-//        if (source == curr_location)
-//            return curr_g;
-//
-//    }
-//
-//
-//    return MAX_TIMESTEP;
-//}
 
 
 int get_h(SharedEnvironment* env, int source, int target){
