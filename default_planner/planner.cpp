@@ -97,6 +97,7 @@ namespace DefaultPlanner{
             {
                 dummy_goals.at(i) = env->curr_states.at(i).location;
                 trajLNS.start_locs[i] = env->curr_states.at(i).location;
+                trajLNS.tasks[i] = env->curr_states.at(i).location;
             }
         }
 
@@ -128,18 +129,20 @@ namespace DefaultPlanner{
                 p[i] = p_copy[i];
             }
             else{
-                trajLNS.tasks[i] = env->goal_locations[i].front().first;
+
+                // an agent is assigned a new task
+                if (trajLNS.tasks[i] != env->goal_locations[i].front().first)
+                {
+                    trajLNS.flow_heuristics[i].reset();
+                    trajLNS.start_locs[i] = trajLNS.tasks[i];
+                    trajLNS.tasks[i] = env->goal_locations[i].front().first;
+
+                    init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
+                                           trajLNS.tasks[i], trajLNS.start_locs[i]);
+                }
+
             }
 
-
-
-            // initialize the traffic table
-            int goal_loc = trajLNS.tasks[i];
-            if (trajLNS.flow_heuristics[i].empty())
-            {
-                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
-                                       goal_loc, trajLNS.start_locs[i]);
-            }
 
 
 
@@ -230,18 +233,6 @@ namespace DefaultPlanner{
 
         prev_states = next_states;
 
-
-
-        // clear traffic heuristics table when a goal is achieved and reset start_locs
-        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
-        {
-            int curr_goal = trajLNS.tasks.at(agent_i);
-            if (prev_states[agent_i].location == curr_goal)
-            {
-                trajLNS.flow_heuristics[agent_i].reset();
-                trajLNS.start_locs[agent_i] = curr_goal;
-            }
-        }
 
 
         return;
