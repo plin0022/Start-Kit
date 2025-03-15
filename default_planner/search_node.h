@@ -27,6 +27,7 @@ struct s_node
     s_node(int id, int g, int h, int op_flow, int depth) : id(id), g(g), h(h), op_flow(op_flow),depth(depth) {};
     s_node() = default;
 
+    int get_all_costs() const { return g + h + op_flow + all_vertex_flow; }
     int get_f() const { return g + h; }
     bool is_closed() const { return closed; }
     void close() { closed = true; }
