@@ -14,14 +14,9 @@ namespace DefaultPlanner{
 
 
 s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
-    HeuristicTable& ht, Traj& traj,
+    HeuristicTable& ht, MDD_Traj &traj,
     MemoryPool& mem, int start, int goal, Neighbors* ns);
 
-
-    s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
-                 std::vector<std::vector<std::pair<int, Int4>>>& flow_time,
-                 HeuristicTable& ht, Traj& traj,
-                 MemoryPool& mem, int start, int goal, Neighbors* ns);
 
 
 }
