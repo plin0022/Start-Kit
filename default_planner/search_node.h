@@ -20,7 +20,6 @@ struct s_node
 
     // parents and children
     std::unordered_map<int, s_node*> parents;
-    std::unordered_map<int, s_node*> children;
 
     unsigned int priority;
 
@@ -55,7 +54,6 @@ struct s_node
         tie_breaker = 0;
 
         parents.clear();
-        children.clear();
     }
     /* data */
 };
