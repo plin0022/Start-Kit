@@ -137,7 +137,7 @@ namespace DefaultPlanner{
                 if (trajLNS.tasks[i] != env->goal_locations[i].front().first)
                 {
                     trajLNS.flow_heuristics[i].reset();
-                    trajLNS.start_locs[i] = trajLNS.tasks[i];
+                    trajLNS.start_locs[i] = env->curr_states.at(i).location;
                     trajLNS.tasks[i] = env->goal_locations[i].front().first;
 
                     init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
