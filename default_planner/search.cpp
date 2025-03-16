@@ -11,7 +11,7 @@ namespace DefaultPlanner {
 
 
     s_node astar(SharedEnvironment *env, std::vector<Int4> &flow,
-                 HeuristicTable &ht, Traj &traj,
+                 HeuristicTable &ht, MDD_Traj &traj,
                  MemoryPool &mem, int start, int goal, Neighbors *ns) {
         mem.reset();
 
@@ -26,9 +26,10 @@ namespace DefaultPlanner {
 
         s_node *root = mem.generate_node(start, 0, h, 0, 0, 0);
 
+
         if (start == goal) {
             traj.clear();
-            traj.push_back(start);
+            traj[start] = {};
             return *root;
         }
 
@@ -239,42 +240,42 @@ namespace DefaultPlanner {
         }
 
 
-        // build children connection so it is viable to traverse forward
+        // record the connection in traj and add_traj
         std::queue<s_node*> nodes;
         nodes.push(goal_node);
+        traj[goal_node->id] = {};
+        int next_loc, prev_loc, loc_diff, loc_d;
+
+
         while (!nodes.empty())
         {
             s_node* curr_node = nodes.front();
             nodes.pop();
-            s_node* parent_node = ;
-        }
+            if (curr_node->id == start) continue;
+
+            next_loc = curr_node->id;
 
 
+            // build connections between curr_node and its parents
+            for (auto next_node : curr_node->parents)
+            {
+                traj[curr_node->id].push_back(next_node.first);
 
-        std::vector<int> temp_traj;
-        s_node *curr = goal_node;
-        while (true)
-        {
-            temp_traj.push_back(curr->id);
-            if (curr->id == start)
-                break;
+                if (traj.find(next_node.first) == traj.end())
+                {
+                    nodes.push(next_node.second);
+                    traj[next_node.first] = {};
+                }
 
-            if (curr->parents.size() > 1) {
-                // Use std::next to get an iterator to the second element.
-                auto it = std::next(curr->parents.begin());
-                curr = it->second;
-            } else {
-                // Only one parent exists.
-                curr = curr->parents.begin()->second;
+                prev_loc = next_node.first;
+                loc_diff = next_loc - prev_loc;
+                loc_d = get_d(loc_diff, env);
+                flow[prev_loc].d[loc_d] += 1;
+
             }
-//            curr = curr->parents.begin()->second;
         }
 
 
-        traj.resize(temp_traj.size());
-        for (int i = temp_traj.size() - 1; i >= 0; i--) {
-            traj[i] = temp_traj[temp_traj.size() - 1 - i];
-        }
 
         return *goal_node;
     }
