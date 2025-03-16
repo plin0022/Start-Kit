@@ -123,6 +123,9 @@ namespace DefaultPlanner{
             }
 
 
+
+            require_guide_path[i] = false;
+
             // set the goal location of each agent
             if (env->goal_locations[i].empty()){
                 trajLNS.tasks[i] = dummy_goals.at(i);
@@ -139,6 +142,8 @@ namespace DefaultPlanner{
 
                     init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
                                            trajLNS.tasks[i], trajLNS.start_locs[i]);
+
+                    require_guide_path[i] = true;
                 }
 
             }
@@ -147,10 +152,10 @@ namespace DefaultPlanner{
 
 
 
-            // check if the agent need a guide path update, when the agent has no guide path or the guide path does not end at the goal location
-            require_guide_path[i] = false;
-            if (trajLNS.trajs[i].empty() || trajLNS.trajs[i].back() != trajLNS.tasks[i])
-                    require_guide_path[i] = true;
+//            // check if the agent need a guide path update, when the agent has no guide path or the guide path does not end at the goal location
+//            require_guide_path[i] = false;
+//            if (trajLNS.trajs[i].empty() || trajLNS.trajs[i].back() != trajLNS.tasks[i])
+//                    require_guide_path[i] = true;
 
             // check if the agent completed the action in the previous timestep
             // if not, the agent is till turning towards the action direction, we do not need to plan new action for the agent
@@ -185,12 +190,24 @@ namespace DefaultPlanner{
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
-                if (!trajLNS.trajs[i].empty())
-                    remove_traj(trajLNS, i);
+                if (!trajLNS.mdd_trajs[i].empty())
+                    remove_mdd_traj(trajLNS, i);
                 update_traj(trajLNS, i);
             }
 
         }
+
+
+//        for (int i = 0; i < env->num_of_agents;i++){
+//            if (std::chrono::steady_clock::now() >end_time)
+//                break;
+//            if (require_guide_path[i]){
+//                if (!trajLNS.trajs[i].empty())
+//                    remove_traj(trajLNS, i);
+//                update_traj(trajLNS, i);
+//            }
+//
+//        }
 
         // iterate and recompute the guide path to optimise traffic flow
 //        std::unordered_set<int> updated;
