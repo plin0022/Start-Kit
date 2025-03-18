@@ -91,14 +91,14 @@ class TrajLNS{
     MemoryPool mem;
 
     void init_mem(){
-        mem.init(env->map.size());
+        mem.init(env->map.size(), env);
     }
 
     void init_all_mem()
     {
         for (int i = 0; i < env->num_of_agents; i++)
         {
-            flow_heuristics[i].mem.init(env->map.size());
+            flow_heuristics[i].mem.init(env->map.size(), env);
         }
     }
 
