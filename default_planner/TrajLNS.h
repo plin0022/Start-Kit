@@ -64,8 +64,6 @@ class TrajLNS{
 
     std::vector<Traj> trajs;
 
-    std::vector<MDD_Traj> mdd_trajs;
-
     std::vector<std::pair<int,int>> deviation_agents;
 
     std::vector<Int4> flow;
@@ -105,7 +103,6 @@ class TrajLNS{
     TrajLNS(SharedEnvironment* env, std::vector<HeuristicTable>& heuristics, Neighbors& neighbors):
         env(env),
         trajs(env->num_of_agents),
-        mdd_trajs(env->num_of_agents),
         tasks(env->num_of_agents),
         start_locs(env->num_of_agents),
         flow(env->map.size(),Int4({0,0,0,0})),

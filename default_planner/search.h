@@ -13,9 +13,12 @@ namespace DefaultPlanner{
 //a astar minimized the opposide traffic flow with existing traffic flow
 
 
-s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
-    HeuristicTable& ht, MDD_Traj &traj,
-    MemoryPool& mem, int start, int goal, Neighbors* ns);
+    // single
+    s_node astar(SharedEnvironment* env, std::vector<Int4>& flow,
+                 HeuristicTable& ht, Traj &traj,
+                 MemoryPool& mem, int start, int goal, Neighbors* ns);
+
+
 
 
 

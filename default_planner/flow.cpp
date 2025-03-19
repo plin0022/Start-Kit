@@ -82,26 +82,26 @@ void add_traj(TrajLNS& lns, int agent){
 }
 
 
-void get_deviation(TrajLNS& lns){
-    lns.deviation_agents.clear();
-    for  (int i=0; i< lns.env->num_of_agents;i++){
-        if (lns.traj_dists[i].empty() || lns.trajs[i].empty())
-            continue;
-
-        std::pair<int,int> dists =  get_source_2_path(lns.traj_dists[i], lns.env, lns.env->curr_states[i].location, &(lns.neighbors));
-
-        if (dists.first > 0){
-            lns.deviation_agents.emplace_back(dists.first, i);
-        }
-    }
-
-    std::sort(lns.deviation_agents.begin(), lns.deviation_agents.end(),
-        [](std::pair<int,int>& a, std::pair<int,int>& b)
-		{
-            return a.first > b.first;
-        });
-    return;
-}
+//void get_deviation(TrajLNS& lns){
+//    lns.deviation_agents.clear();
+//    for  (int i=0; i< lns.env->num_of_agents;i++){
+//        if (lns.traj_dists[i].empty() || lns.trajs[i].empty())
+//            continue;
+//
+//        std::pair<int,int> dists =  get_source_2_path(lns.traj_dists[i], lns.env, lns.env->curr_states[i].location, &(lns.neighbors));
+//
+//        if (dists.first > 0){
+//            lns.deviation_agents.emplace_back(dists.first, i);
+//        }
+//    }
+//
+//    std::sort(lns.deviation_agents.begin(), lns.deviation_agents.end(),
+//        [](std::pair<int,int>& a, std::pair<int,int>& b)
+//		{
+//            return a.first > b.first;
+//        });
+//    return;
+//}
 
 void update_fw_metrics(TrajLNS& lns){
     for  (int i=0; i< lns.env->num_of_agents;i++){
@@ -159,29 +159,29 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
 
 
 
-void update_dist_2_path(TrajLNS& lns, int i){
-    init_dist_2_path(lns.traj_dists[i], lns.env, lns.trajs[i]);
-}
-
-//compute distance table for each traj
-void init_dist_table(TrajLNS& lns, int amount){
-
-    int count = 0;
-    for (int i=0 ; i <lns.env->num_of_agents; i++){
-                // std::cout<<i<<";";
-        if (count >= amount){
-            break;
-        }
-        if(!lns.trajs[i].empty() && lns.trajs[i].size() == get_heuristic(lns.heuristics[lns.trajs[i].back()], lns.env,lns.trajs[i].front(),&(lns.neighbors)))
-            continue;
-        if(!lns.trajs[i].empty() && lns.traj_dists[i].empty()){
-            init_dist_2_path(lns.traj_dists[i], lns.env, lns.trajs[i]);
-            count++;
-            lns.dist2path_inited++;
-        }
-
-    }
-}
+//void update_dist_2_path(TrajLNS& lns, int i){
+//    init_dist_2_path(lns.traj_dists[i], lns.env, lns.trajs[i]);
+//}
+//
+////compute distance table for each traj
+//void init_dist_table(TrajLNS& lns, int amount){
+//
+//    int count = 0;
+//    for (int i=0 ; i <lns.env->num_of_agents; i++){
+//                // std::cout<<i<<";";
+//        if (count >= amount){
+//            break;
+//        }
+//        if(!lns.trajs[i].empty() && lns.trajs[i].size() == get_heuristic(lns.heuristics[lns.trajs[i].back()], lns.env,lns.trajs[i].front(),&(lns.neighbors)))
+//            continue;
+//        if(!lns.trajs[i].empty() && lns.traj_dists[i].empty()){
+//            init_dist_2_path(lns.traj_dists[i], lns.env, lns.trajs[i]);
+//            count++;
+//            lns.dist2path_inited++;
+//        }
+//
+//    }
+//}
 
 //update traj and distance table for agent i
 void update_traj(TrajLNS& lns, int i){
@@ -191,15 +191,15 @@ void update_traj(TrajLNS& lns, int i){
     assert(start == lns.start_locs[i]);
 
 
-//        // single
-//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-//                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
-
-
-        // mdd and add_mdd_traj
+        // single
         lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-                                  lns.mdd_trajs[i],lns.mem,start,goal, &(lns.neighbors));
+                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+
+
+
+//        // mdd and add_mdd_traj
+//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
+//                                  lns.mdd_trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
 //    add_traj(lns,i);
