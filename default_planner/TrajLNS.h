@@ -61,6 +61,8 @@ class TrajLNS{
 
     std::vector<int> prev_goals;
 
+    std::vector<int> deviated_timesteps;
+
     TimePoint start_time;
     int t_ms=0;
 
@@ -107,6 +109,7 @@ class TrajLNS{
         tasks(env->num_of_agents),
         start_locs(env->num_of_agents),
         prev_goals(env->num_of_agents),
+        deviated_timesteps(env->num_of_agents, 0),
         flow(env->map.size(),Int4({0,0,0,0})),
         heuristics(heuristics),
         flow_heuristics(env->num_of_agents),

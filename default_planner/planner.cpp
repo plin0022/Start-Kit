@@ -146,6 +146,27 @@ namespace DefaultPlanner{
 
                     require_guide_path[i] = true;
                 }
+                else
+                {
+//                    if (!trajLNS.trajs[i].empty() &&
+//                    trajLNS.trajs[i].find(env->curr_states.at(i).location) != trajLNS.trajs[i].end())
+//                        trajLNS.deviated_timesteps[i] = 0;
+//                    else
+//                        trajLNS.deviated_timesteps[i] = trajLNS.deviated_timesteps[i] + 1;
+//
+//                    if (trajLNS.deviated_timesteps[i] > 10)
+//                    {
+//                        trajLNS.start_locs[i] = env->curr_states.at(i).location;
+//                        trajLNS.flow_heuristics[i].reset();
+//                        init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
+//                                               trajLNS.tasks[i], trajLNS.start_locs[i]);
+//
+//
+//                        trajLNS.deviated_timesteps[i] = 0;
+//                        require_guide_path[i] = true;
+//                    }
+
+                }
 
             }
 

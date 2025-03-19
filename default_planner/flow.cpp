@@ -170,9 +170,9 @@ void update_traj(TrajLNS& lns, int i){
     assert(start == lns.start_locs[i]);
 
 
-        // single
-        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+    // single
+    lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
+                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
 
