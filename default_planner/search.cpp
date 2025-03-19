@@ -28,9 +28,9 @@ namespace DefaultPlanner {
         s_node *root = mem.generate_node(start, 0, h, 0, 0, 0);
 
 
-        if (start == goal) {
+        if (start == goal){
             traj.clear();
-            traj[start] = {};
+            traj.push_back(start);
             return *root;
         }
 
@@ -146,28 +146,14 @@ namespace DefaultPlanner {
         }
 
 
-        // add trajs and flow
-        traj.clear();
-        s_node *curr = goal_node;
-        int prev_loc, next_loc, loc_d, loc_diff;
-
-        while (curr->parent != nullptr)
-        {
-            traj[curr->id] = curr->parent->id;
-
-
-            // update flow information here
-            prev_loc = curr->parent->id;
-            next_loc = curr->id;
-            loc_diff = next_loc - prev_loc;
-            loc_d = get_d(loc_diff, env);
-            flow[prev_loc].d[loc_d] += 1;
-
-
+        traj.resize(goal_node->depth+1);
+        s_node* curr = goal_node;
+        for (int i=goal_node->depth; i>=0; i--){
+            traj[i] = curr->id;
             curr = curr->parent;
         }
 
-        traj[start] = -1;
+
 
 
         return *goal_node;
