@@ -91,16 +91,7 @@ namespace DefaultPlanner{
 //    };
 
 
-    struct THeuristicTable{
 
-        std::vector<int> traffic_htable;
-        pqueue<HNode, compare_node, min_q> traffic_open;
-        std::vector<bool> traffic_closed;
-
-        std::unordered_map<int, HNode*> node_list;
-
-
-    };
 
     struct HeuristicTable{
 		std::vector<int> htable;

@@ -39,7 +39,7 @@ namespace DefaultPlanner {
 
         open.push(root);
 
-        int d, cost, op_flow, all_vertex_flow, depth;
+        int d, diff, cost, op_flow, all_vertex_flow, depth;
         int temp_op, temp_vertex;
         double tie_breaker;
 
@@ -78,6 +78,9 @@ namespace DefaultPlanner {
                     h = manhattanDistance(next, goal, env);
                 else
                     h = get_heuristic(ht, env, next, ns);
+
+                diff = next - curr->id;
+                d = get_d(diff,env);
 
 
                 temp_op = ((flow[curr->id].d[d] + 1) *
@@ -143,9 +146,11 @@ namespace DefaultPlanner {
         }
 
 
+        // add trajs and flow
         traj.clear();
         s_node *curr = goal_node;
         int prev_loc, next_loc, loc_d, loc_diff;
+
         while (curr->parent != nullptr)
         {
             traj[curr->id] = curr->parent->id;
@@ -161,6 +166,8 @@ namespace DefaultPlanner {
 
             curr = curr->parent;
         }
+
+        traj[start] = -1;
 
 
         return *goal_node;

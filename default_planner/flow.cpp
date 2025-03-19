@@ -11,28 +11,6 @@ namespace DefaultPlanner{
 std::mt19937 g(0);
 
 
-// remove mdd trajectory
-void remove_mdd_traj(TrajLNS& lns, int agent){
-    int loc, prev_loc, diff, d;
-
-    for (auto each : lns.mdd_trajs[agent])
-    {
-        loc = each.first;
-
-        for (auto id: each.second)
-        {
-            prev_loc = id;
-            diff = loc - prev_loc;
-            d = get_d(diff, lns.env);
-            lns.flow[prev_loc].d[d] -= 1;
-        }
-    }
-
-    lns.mdd_trajs[agent].clear();
-
-
-}
-
 
 //remove flow for each location's outgoing edge according to the traj
 void remove_traj(TrajLNS& lns, int agent){
@@ -40,22 +18,23 @@ void remove_traj(TrajLNS& lns, int agent){
     if (lns.trajs[agent].size() <= 1){
         return;
     }
-    int loc, prev_loc, diff, d, rev_d, to;
+    int loc, prev_loc, diff, d;
 
-    to = lns.trajs[agent].size();
+    loc = lns.prev_goals[agent];  // set loc to previous goal
 
-    for (int j = 1; j < to; j++){
-        loc = lns.trajs[agent][j];
-        prev_loc = lns.trajs[agent][j-1];
+    while (lns.trajs[agent][loc] != -1)
+    {
+        prev_loc = lns.trajs[agent][loc];
         diff = loc - prev_loc;
         d = get_d(diff, lns.env);
-        rev_d = (d < 2) ? (d + 2) : (d - 2);
-
 
         lns.flow[prev_loc].d[d] -= 1;
 
-
+        loc = lns.trajs[agent][loc];
     }
+
+    lns.trajs[agent].clear();
+
 }
 
 void add_traj(TrajLNS& lns, int agent){

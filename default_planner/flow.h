@@ -12,7 +12,6 @@
 namespace DefaultPlanner{
 
 //remove flow for each location's outgoing edge according to the traj
-void remove_mdd_traj(TrajLNS& lns, int agent);
 
 void remove_traj(TrajLNS& lns, int agent);
 

@@ -136,6 +136,7 @@ namespace DefaultPlanner{
                 // an agent is assigned a new task
                 if (trajLNS.tasks[i] != env->goal_locations[i].front().first)
                 {
+                    trajLNS.prev_goals[i] = trajLNS.tasks[i];
                     trajLNS.flow_heuristics[i].reset();
                     trajLNS.start_locs[i] = env->curr_states.at(i).location;
                     trajLNS.tasks[i] = env->goal_locations[i].front().first;
@@ -190,8 +191,8 @@ namespace DefaultPlanner{
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
-                if (!trajLNS.mdd_trajs[i].empty())
-                    remove_mdd_traj(trajLNS, i);
+                if (!trajLNS.trajs[i].empty())
+                    remove_traj(trajLNS, i);
                 update_traj(trajLNS, i);
             }
 
