@@ -166,23 +166,10 @@ void update_traj(TrajLNS& lns, int i){
     int goal = lns.tasks[i];
 
 
-//    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal], lns.heuristics,
-//                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
-//        astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal],
-//              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
-
-//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.flow_time,lns.heuristics[goal],
-//                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
-
-// directly use traffic_heuristic here
-
-
-        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+    lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
+                          lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
     add_traj(lns,i);

@@ -55,8 +55,7 @@ namespace DefaultPlanner{
 
             new (&trajLNS) TrajLNS(env, global_heuristictable, global_neighbors);
             trajLNS.init_mem();
-            
-            trajLNS.init_all_mem();
+
 
             //assign intial priority to each agent
             std::shuffle(ids.begin(), ids.end(), mt1);
@@ -96,7 +95,6 @@ namespace DefaultPlanner{
             for(int i=0; i<env->num_of_agents; i++)
             {
                 dummy_goals.at(i) = env->curr_states.at(i).location;
-                trajLNS.start_locs[i] = env->curr_states.at(i).location;
             }
         }
 
@@ -130,17 +128,6 @@ namespace DefaultPlanner{
             else{
                 trajLNS.tasks[i] = env->goal_locations[i].front().first;
             }
-
-
-
-            // initialize the traffic table
-            int goal_loc = trajLNS.tasks[i];
-            if (trajLNS.flow_heuristics[i].empty())
-            {
-                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
-                                       goal_loc, trajLNS.start_locs[i]);
-            }
-
 
 
 
@@ -230,18 +217,6 @@ namespace DefaultPlanner{
 
         prev_states = next_states;
 
-
-
-        // clear traffic heuristics table when a goal is achieved and reset start_locs
-        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
-        {
-            int curr_goal = trajLNS.tasks.at(agent_i);
-            if (prev_states[agent_i].location == curr_goal)
-            {
-                trajLNS.flow_heuristics[agent_i].reset();
-                trajLNS.start_locs[agent_i] = curr_goal;
-            }
-        }
 
 
         return;

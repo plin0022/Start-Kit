@@ -57,7 +57,6 @@ class TrajLNS{
     SharedEnvironment* env;
     std::vector<int> tasks;
 
-    std::vector<int> start_locs;
 
     TimePoint start_time;
     int t_ms=0;
@@ -71,9 +70,6 @@ class TrajLNS{
 
     std::vector<HeuristicTable>& heuristics;
 
-    std::vector<FlowHeuristic> flow_heuristics;
-
-    std::vector<THeuristicTable> t_heuristics;
 
     std::vector<Dist2Path> traj_dists;
     std::vector<s_node> goal_nodes;// store the goal node of single agent search for each agent. contains all cost information.
@@ -92,23 +88,13 @@ class TrajLNS{
         mem.init(env->map.size());
     }
 
-    void init_all_mem()
-    {
-        for (int i = 0; i < env->num_of_agents; i++)
-        {
-            flow_heuristics[i].mem.init(env->map.size());
-        }
-    }
 
     TrajLNS(SharedEnvironment* env, std::vector<HeuristicTable>& heuristics, Neighbors& neighbors):
         env(env),
         trajs(env->num_of_agents),
         tasks(env->num_of_agents),
-        start_locs(env->num_of_agents),
         flow(env->map.size(),Int4({0,0,0,0})),
         heuristics(heuristics),
-        flow_heuristics(env->num_of_agents),
-        t_heuristics(env->num_of_agents),
         traj_dists(env->num_of_agents),goal_nodes(env->num_of_agents),
         fw_metrics(env->num_of_agents),neighbors(neighbors){
         };
