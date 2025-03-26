@@ -130,7 +130,6 @@ namespace DefaultPlanner{
                 p[i] = p_copy[i];
             }
             else{
-
                 // an agent is assigned a new task
                 if (trajLNS.tasks[i] != env->goal_locations[i].front().first)
                 {
@@ -142,29 +141,15 @@ namespace DefaultPlanner{
                     init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
                                            trajLNS.tasks[i], trajLNS.start_locs[i]);
                 }
-                else
-                {
-//                    if (!trajLNS.trajs[i].empty() &&
-//                    trajLNS.trajs[i].find(env->curr_states.at(i).location) != trajLNS.trajs[i].end())
-//                        trajLNS.deviated_timesteps[i] = 0;
-//                    else
-//                        trajLNS.deviated_timesteps[i] = trajLNS.deviated_timesteps[i] + 1;
-//
-//                    if (trajLNS.deviated_timesteps[i] > 10)
-//                    {
-//                        trajLNS.start_locs[i] = env->curr_states.at(i).location;
-//                        trajLNS.flow_heuristics[i].reset();
-//                        init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
-//                                               trajLNS.tasks[i], trajLNS.start_locs[i]);
-//
-//
-//                        trajLNS.deviated_timesteps[i] = 0;
-//                        require_guide_path[i] = true;
-//                    }
-
-                }
-
             }
+
+
+            // calculate how many time steps an agent is deviating
+            if (!trajLNS.trajs_check[i].empty() && !trajLNS.trajs[i].empty() &&
+                (trajLNS.trajs_check[i].find(env->curr_states.at(i).location) != trajLNS.trajs_check[i].end()))
+                trajLNS.deviated_timesteps[i] = 0;
+            else
+                trajLNS.deviated_timesteps[i] = trajLNS.deviated_timesteps[i] + 1;
 
 
 
@@ -173,7 +158,7 @@ namespace DefaultPlanner{
             // check if the agent need a guide path update, when the agent has no guide path or the guide path does not end at the goal location
             require_guide_path[i] = false;
             if (trajLNS.trajs[i].empty() || trajLNS.trajs[i].back() != trajLNS.tasks[i])
-                    require_guide_path[i] = true;
+                require_guide_path[i] = true;
 
             // check if the agent completed the action in the previous timestep
             // if not, the agent is till turning towards the action direction, we do not need to plan new action for the agent
@@ -212,20 +197,30 @@ namespace DefaultPlanner{
                     remove_traj(trajLNS, i);
                 update_traj(trajLNS, i);
             }
+        }
 
+        // recontribute to flow table
+        for (int i = 0; i < env->num_of_agents;i++){
+            if (std::chrono::steady_clock::now() >end_time)
+                break;
+
+            if (trajLNS.deviated_timesteps[i] > 5)
+            {
+                trajLNS.start_locs[i] = env->curr_states.at(i).location;
+                trajLNS.flow_heuristics[i].reset();
+                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
+                                       trajLNS.tasks[i], trajLNS.start_locs[i]);
+
+
+                trajLNS.deviated_timesteps[i] = 0;
+
+                if (!trajLNS.trajs[i].empty())
+                    remove_traj(trajLNS, i);
+                update_traj(trajLNS, i);
+            }
         }
 
 
-//        for (int i = 0; i < env->num_of_agents;i++){
-//            if (std::chrono::steady_clock::now() >end_time)
-//                break;
-//            if (require_guide_path[i]){
-//                if (!trajLNS.trajs[i].empty())
-//                    remove_traj(trajLNS, i);
-//                update_traj(trajLNS, i);
-//            }
-//
-//        }
 
         // iterate and recompute the guide path to optimise traffic flow
 //        std::unordered_set<int> updated;

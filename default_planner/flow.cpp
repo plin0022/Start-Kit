@@ -32,6 +32,9 @@ void remove_traj(TrajLNS& lns, int agent){
         lns.flow[prev_loc].d[d] -= 1;
 
     }
+
+    lns.trajs[agent].clear();
+    lns.trajs_check[agent].clear();
 }
 
 
@@ -168,7 +171,8 @@ void update_traj(TrajLNS& lns, int i){
 
     // single
     lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+                              lns.trajs[i], lns.trajs_check[i],
+                              lns.mem,start,goal, &(lns.neighbors));
 
 
 

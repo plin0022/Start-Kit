@@ -11,7 +11,7 @@ namespace DefaultPlanner {
 
     // original
     s_node astar(SharedEnvironment *env, std::vector<Int4> &flow,
-                 HeuristicTable &ht, Traj &traj,
+                 HeuristicTable &ht, Traj &traj, TrajCheck &trajc,
                  MemoryPool &mem, int start, int goal, Neighbors *ns) {
         mem.reset();
 
@@ -31,6 +31,7 @@ namespace DefaultPlanner {
         if (start == goal){
             traj.clear();
             traj.push_back(start);
+            trajc[start] = start;
             return *root;
         }
 
@@ -150,6 +151,7 @@ namespace DefaultPlanner {
         s_node* curr = goal_node;
         for (int i=goal_node->depth; i>=0; i--){
             traj[i] = curr->id;
+            trajc[curr->id] = curr->id;
             curr = curr->parent;
         }
 
