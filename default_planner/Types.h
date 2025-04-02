@@ -27,13 +27,14 @@ namespace DefaultPlanner{
 		DONE
 	};
 
+    struct Float4{
+        float d[4];
+    };
+
 	struct Int4{
 		int d[4];
 	};
 
-	struct Int2{
-		int d[4];
-	};
 
 	struct DCR{
 		int loc;
