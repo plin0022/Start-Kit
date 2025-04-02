@@ -18,8 +18,8 @@ int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
         min_heuristic = get_traffic_heuristic(lns, lns.flow_heuristics[ai],
                                               lns.env, target, lns.start_locs[ai], &(lns.neighbors));
     }
-    else if (!lns.heuristics[lns.tasks.at(ai)].empty())
-        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
+//    else if (!lns.heuristics[lns.tasks.at(ai)].empty())
+//        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
     else
         min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
 
@@ -85,53 +85,53 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 	std::sort(successors.begin(), successors.end(), 
 		[&](PIBT_C& a, PIBT_C& b)
 		{
-            // prefer the tile which optimizes the current tile (A* updates with better costs)
-            int diff_a = a.location - prev_loc;
-            int diff_b = b.location - prev_loc;
-            int d_a = get_d(diff_a, lns.env);
-            int d_b = get_d(diff_b, lns.env);
-
-            int temp_op_a = (lns.flow[prev_loc].d[d_a] + 1) * lns.flow[a.location].d[(d_a + 2) % 4];
-            int temp_op_b = (lns.flow[prev_loc].d[d_b] + 1) * lns.flow[b.location].d[(d_b + 2) % 4];
-
-            int temp_vertex_a = 1;
-            for (int j = 0; j < 4; j++) {
-                temp_vertex_a += lns.flow[a.location].d[j];
-            }
-
-            int temp_vertex_b = 1;
-            for (int j = 0; j < 4; j++) {
-                temp_vertex_b += lns.flow[b.location].d[j];
-            }
-
-
-            if ((a.heuristic + 1 + temp_op_a + (temp_vertex_a - 1) / 2) == wait_heuristic &&
-            (b.heuristic + 1 + temp_op_b + (temp_vertex_b - 1) / 2) != wait_heuristic)
-                return true;
-            else if ((a.heuristic + 1 + temp_op_a + (temp_vertex_a - 1) / 2) != wait_heuristic &&
-                (b.heuristic + 1 + temp_op_b + (temp_vertex_b - 1) / 2) == wait_heuristic)
-                return false;
-            else
-            {
-                if (a.heuristic == b.heuristic){
-
-                    // random tie break
-                    return a.tie_breaker < b.tie_breaker;
-                }
-                return a.heuristic < b.heuristic;
-            }
-
-
-//            if (a.heuristic == b.heuristic){
-//                //tie break on prefer moving forward
-//                if (a.location==orien_next_v && b.location!=orien_next_v)
-//                    return true;
-//                if (a.location!=orien_next_v && b.location==orien_next_v)
-//                    return false;
-//                // random tie break
-//                return a.tie_breaker < b.tie_breaker;
+//            // prefer the tile which optimizes the current tile (A* updates with better costs)
+//            int diff_a = a.location - prev_loc;
+//            int diff_b = b.location - prev_loc;
+//            int d_a = get_d(diff_a, lns.env);
+//            int d_b = get_d(diff_b, lns.env);
+//
+//            int temp_op_a = (lns.flow[prev_loc].d[d_a] + 1) * lns.flow[a.location].d[(d_a + 2) % 4];
+//            int temp_op_b = (lns.flow[prev_loc].d[d_b] + 1) * lns.flow[b.location].d[(d_b + 2) % 4];
+//
+//            int temp_vertex_a = 1;
+//            for (int j = 0; j < 4; j++) {
+//                temp_vertex_a += lns.flow[a.location].d[j];
 //            }
-//            return a.heuristic < b.heuristic;
+//
+//            int temp_vertex_b = 1;
+//            for (int j = 0; j < 4; j++) {
+//                temp_vertex_b += lns.flow[b.location].d[j];
+//            }
+//
+//
+//            if ((a.heuristic + 1 + temp_op_a + (temp_vertex_a - 1) / 2) == wait_heuristic &&
+//            (b.heuristic + 1 + temp_op_b + (temp_vertex_b - 1) / 2) != wait_heuristic)
+//                return true;
+//            else if ((a.heuristic + 1 + temp_op_a + (temp_vertex_a - 1) / 2) != wait_heuristic &&
+//                (b.heuristic + 1 + temp_op_b + (temp_vertex_b - 1) / 2) == wait_heuristic)
+//                return false;
+//            else
+//            {
+//                if (a.heuristic == b.heuristic){
+//
+//                    // random tie break
+//                    return a.tie_breaker < b.tie_breaker;
+//                }
+//                return a.heuristic < b.heuristic;
+//            }
+
+
+            if (a.heuristic == b.heuristic){
+                //tie break on prefer moving forward
+                if (a.location==orien_next_v && b.location!=orien_next_v)
+                    return true;
+                if (a.location!=orien_next_v && b.location==orien_next_v)
+                    return false;
+                // random tie break
+                return a.tie_breaker < b.tie_breaker;
+            }
+            return a.heuristic < b.heuristic;
         });
 
 

@@ -144,12 +144,12 @@ namespace DefaultPlanner{
             }
 
 
-            // calculate how many time steps an agent is deviating
-            if (!trajLNS.trajs_check[i].empty() && !trajLNS.trajs[i].empty() &&
-                (trajLNS.trajs_check[i].find(env->curr_states.at(i).location) != trajLNS.trajs_check[i].end()))
-                trajLNS.deviated_timesteps[i] = 0;
-            else
-                trajLNS.deviated_timesteps[i] = trajLNS.deviated_timesteps[i] + 1;
+//            // calculate how many time steps an agent is deviating
+//            if (!trajLNS.trajs_check[i].empty() && !trajLNS.trajs[i].empty() &&
+//                (trajLNS.trajs_check[i].find(env->curr_states.at(i).location) != trajLNS.trajs_check[i].end()))
+//                trajLNS.deviated_timesteps[i] = 0;
+//            else
+//                trajLNS.deviated_timesteps[i] = trajLNS.deviated_timesteps[i] + 1;
 
 
 
@@ -199,26 +199,26 @@ namespace DefaultPlanner{
             }
         }
 
-        // recontribute to flow table
-        for (int i = 0; i < env->num_of_agents;i++){
-            if (std::chrono::steady_clock::now() >end_time)
-                break;
-
-            if (trajLNS.deviated_timesteps[i] > 5)
-            {
-                trajLNS.start_locs[i] = env->curr_states.at(i).location;
-                trajLNS.flow_heuristics[i].reset();
-                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
-                                       trajLNS.tasks[i], trajLNS.start_locs[i]);
-
-
-                trajLNS.deviated_timesteps[i] = 0;
-
-                if (!trajLNS.trajs[i].empty())
-                    remove_traj(trajLNS, i);
-                update_traj(trajLNS, i);
-            }
-        }
+//        // recontribute to flow table
+//        for (int i = 0; i < env->num_of_agents;i++){
+//            if (std::chrono::steady_clock::now() >end_time)
+//                break;
+//
+//            if (trajLNS.deviated_timesteps[i] > 50)
+//            {
+//                trajLNS.start_locs[i] = env->curr_states.at(i).location;
+//                trajLNS.flow_heuristics[i].reset();
+//                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,
+//                                       trajLNS.tasks[i], trajLNS.start_locs[i]);
+//
+//
+//                trajLNS.deviated_timesteps[i] = 0;
+//
+//                if (!trajLNS.trajs[i].empty())
+//                    remove_traj(trajLNS, i);
+//                update_traj(trajLNS, i);
+//            }
+//        }
 
 
 
