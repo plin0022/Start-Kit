@@ -43,7 +43,9 @@ namespace DefaultPlanner{
 
 	typedef std::vector<int> Traj;
 
-    typedef std::unordered_map<int, std::vector<int>> MDD_Traj;  //first int is id, second vector of int is parents' ids
+//    typedef std::unordered_map<int, std::vector<int>> MDD_Traj;  //first int is id, second vector of int is parents' ids
+
+    typedef std::unordered_map<int, std::unordered_map<int, float>> MDD_Traj;
 
 	struct PIBT_C{
 		int location;

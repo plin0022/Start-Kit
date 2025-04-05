@@ -19,12 +19,12 @@ void remove_mdd_traj(TrajLNS& lns, int agent){
     {
         loc = each.first;
 
-        for (auto id: each.second)
+        for (auto parent: each.second)
         {
-            prev_loc = id;
+            prev_loc = parent.first;
             diff = loc - prev_loc;
             d = get_d(diff, lns.env);
-            lns.flow[prev_loc].d[d] -= 1;
+            lns.flow[prev_loc].d[d] -= parent.second;
         }
     }
 

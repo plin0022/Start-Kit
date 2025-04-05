@@ -241,37 +241,46 @@ namespace DefaultPlanner {
 
 
         // record the connection in traj and add_traj
-        std::queue<s_node*> nodes;
-        nodes.push(goal_node);
-        traj[goal_node->id] = {};
+        float total_weight = 1;
+        std::queue<std::pair<s_node*, float>> nodes;
+        nodes.emplace(goal_node,total_weight);
         int next_loc, prev_loc, loc_diff, loc_d;
 
 
         while (!nodes.empty())
         {
-            s_node* curr_node = nodes.front();
+            s_node* curr_node = nodes.front().first;
+            float curr_weight = nodes.front().second;
+
             nodes.pop();
+
+            if (traj.find(curr_node->id) == traj.end())
+                traj[curr_node->id] = {};
+//            else
+//                if (curr_node->id != start)
+//                    int xxx = 123;
+
             if (curr_node->id == start) continue;
 
+            float divided_weight = curr_weight / curr_node->parents.size();
             next_loc = curr_node->id;
 
 
             // build connections between curr_node and its parents
-            for (auto next_node : curr_node->parents)
+            for (auto parent_node : curr_node->parents)
             {
-                traj[curr_node->id].push_back(next_node.first);
+                if (traj[curr_node->id].find(parent_node.first) == traj[curr_node->id].end())
+                    traj[curr_node->id][parent_node.first] = divided_weight;
+                else
+                    traj[curr_node->id][parent_node.first] = traj[curr_node->id][parent_node.first] + divided_weight;
 
-                if (traj.find(next_node.first) == traj.end())
-                {
-                    nodes.push(next_node.second);
-                    traj[next_node.first] = {};
-                }
 
-                prev_loc = next_node.first;
+                prev_loc = parent_node.first;
                 loc_diff = next_loc - prev_loc;
                 loc_d = get_d(loc_diff, env);
-                flow[prev_loc].d[loc_d] += 1;
+                flow[prev_loc].d[loc_d] += divided_weight;
 
+                nodes.emplace(parent_node.second, divided_weight);
             }
         }
 
