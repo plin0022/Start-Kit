@@ -197,9 +197,9 @@ void update_traj(TrajLNS& lns, int i){
 
 
 
-        // mdd and add_mdd_traj
-        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-                                  lns.mdd_trajs[i],lns.mem,start,goal, &(lns.neighbors));
+    // mdd and add_mdd_traj
+    lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
+                              lns.mdd_trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
 //    add_traj(lns,i);

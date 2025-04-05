@@ -69,7 +69,7 @@ class TrajLNS{
     std::vector<std::pair<int,int>> deviation_agents;
 
     std::vector<Float4> flow;
-    
+
     std::vector<HeuristicTable>& heuristics;
 
     std::vector<FlowHeuristic> flow_heuristics;

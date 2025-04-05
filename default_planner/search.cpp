@@ -10,7 +10,7 @@ namespace DefaultPlanner {
 
 
 
-    s_node astar(SharedEnvironment *env, std::vector<Int4> &flow,
+    s_node astar(SharedEnvironment *env, std::vector<Float4> &flow,
                  HeuristicTable &ht, MDD_Traj &traj,
                  MemoryPool &mem, int start, int goal, Neighbors *ns) {
         mem.reset();
