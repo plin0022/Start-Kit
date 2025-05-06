@@ -252,6 +252,12 @@ namespace DefaultPlanner {
 
         int iter = 0;
 
+
+        // visited list
+        std::unordered_map<int, int> visited;
+        visited.emplace(goal_node->id, goal_node->id);
+
+
         while (!nodes.empty())
         {
             s_node* curr_node = nodes.front().first;
@@ -262,6 +268,9 @@ namespace DefaultPlanner {
             std::cout << "iterated node" << curr_node->id << std::endl;
 
             nodes.pop();
+
+            if (curr_node->id == 1671 && goal == 911 && start == 1841)
+                int yyy= 321;
 
             if (traj.find(curr_node->id) == traj.end())
                 traj[curr_node->id] = {};
@@ -307,8 +316,16 @@ namespace DefaultPlanner {
                 loc_d = get_d(loc_diff, env);
                 flow[prev_loc].d[loc_d] += divided_weight;
 
-                if (traj.find(parent_node.first) == traj.end())
+//                nodes.emplace(parent_node.second, divided_weight);
+
+//                if (traj.find(parent_node.first) == traj.end())
+//                {
+//                    nodes.emplace(parent_node.second, divided_weight);
+//                }
+
+                if (visited.find(parent_node.first) == visited.end())
                 {
+                    visited.emplace(parent_node.first, parent_node.first);
                     nodes.emplace(parent_node.second, divided_weight);
                 }
 
