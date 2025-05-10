@@ -241,106 +241,37 @@ namespace DefaultPlanner {
 
 
 
-        // record the connection in traj and add_traj
-        float total_weight = 1;
-        std::queue<std::pair<s_node*, float>> nodes;
-        std::unordered_map<int, std::unordered_map<int, int>> children;
-        children[goal_node->id] = {};
-//        std::unordered_map<>;
-        nodes.emplace(goal_node,total_weight);
-        int next_loc, prev_loc, loc_diff, loc_d;
+        // backward search from goal to find out all the parents-children relationships
+        std::unordered_map<int, std::unordered_map<int, int>> parent_children;  // first int is parent_id, inside map is children
+        std::vector<bool> visited(env->map.size(), false);  // record if a node is visited before
+        std::queue<s_node*> nodes;
 
-        int iter = 0;
+        nodes.emplace(goal_node);
+        visited[goal_node->id] = true;
 
-
-        // visited list
-        std::unordered_map<int, int> visited;
-        visited.emplace(goal_node->id, goal_node->id);
-
-
+        // build parent_children connections
         while (!nodes.empty())
         {
-            s_node* curr_node = nodes.front().first;
-            float curr_weight = nodes.front().second;
-
-            iter = iter + 1;
-            std::cout << "iteration: " << iter << std::endl;
-            std::cout << "iterated node" << curr_node->id << std::endl;
-
+            s_node* curr_node = nodes.front();
             nodes.pop();
 
-            if (curr_node->id == 1671 && goal == 911 && start == 1841)
-                int yyy= 321;
-
-            if (traj.find(curr_node->id) == traj.end())
-                traj[curr_node->id] = {};
-//            else
-//                if (curr_node->id != start)
-//                    int xxx = 123;
-
-            if (curr_node->id == start) continue;
-
-            float divided_weight = curr_weight / curr_node->parents.size();
-            next_loc = curr_node->id;
-
-
-            // build connections between curr_node and its parents
             for (auto parent_node : curr_node->parents)
             {
-                if (traj[curr_node->id].find(parent_node.first) == traj[curr_node->id].end())
+                if (!visited[parent_node.first])
                 {
-                    traj[curr_node->id][parent_node.first] = divided_weight;
-                    for (auto temp_node : children[curr_node->id])
-                    {
-                        children[parent_node.first][temp_node.first] = temp_node.first;
-                    }
-                    children[parent_node.first][curr_node->id] = curr_node->id;
+                    nodes.emplace(parent_node.second);
+                    visited[parent_node.first] = true;
                 }
-
-                else
-                    traj[curr_node->id][parent_node.first] = traj[curr_node->id][parent_node.first] + divided_weight;
-
-                if (children[curr_node->id].find(parent_node.first) != children[curr_node->id].end() ||
-                        children[curr_node->id].find(curr_node->id) != children[curr_node->id].end())
-                    std::cout << "infinite loop" << nodes.size() << std::endl;
-
-                for (auto ele : children[curr_node->id])
-                {
-                    std::cout << ele.second << ",";
-                }
-
-                std::cout << std::endl;
-
-                prev_loc = parent_node.first;
-                loc_diff = next_loc - prev_loc;
-                loc_d = get_d(loc_diff, env);
-                flow[prev_loc].d[loc_d] += divided_weight;
-
-//                nodes.emplace(parent_node.second, divided_weight);
-
-//                if (traj.find(parent_node.first) == traj.end())
-//                {
-//                    nodes.emplace(parent_node.second, divided_weight);
-//                }
-
-                if (visited.find(parent_node.first) == visited.end())
-                {
-                    visited.emplace(parent_node.first, parent_node.first);
-                    nodes.emplace(parent_node.second, divided_weight);
-                }
-
-                std::cout << "the parent_id: " << parent_node.first << std::endl;
-                std::cout << "the curr_id: " << curr_node->id << std::endl;
-
-
-
+                parent_children[parent_node.first][curr_node->id] = curr_node->id;
             }
-
-            std::cout << "the number of nodes is: " << nodes.size() << std::endl;
-
-            std::cout << "iteration: " << iter << "end "<< std::endl;
-            int xxx  = 123;
         }
+
+
+
+
+
+
+
 
 
 
