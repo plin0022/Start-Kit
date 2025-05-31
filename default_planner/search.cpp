@@ -266,7 +266,58 @@ namespace DefaultPlanner {
             }
         }
 
+        // open and closed
+        std::vector<bool> id_open(env->map.size(),false);
+        std::vector<bool> id_closed(env->map.size(),false);
 
+        // proceed the node in a task finished manner
+        std::deque<int> id_que;
+        id_que.push_front(start);
+        id_open[start] = true;
+        std::vector<int> ready_map(env->map.size(),5);
+        for (auto each : parent_children)
+        {
+            ready_map[each.first] = mem.get_node(each.first)->parents.size();
+        }
+        ready_map[goal] = mem.get_node(goal)->parents.size();  // goal is not in the parent_children
+
+
+        while (!id_que.empty())
+        {
+            int curr_id = id_que.front();
+            id_que.pop_front();
+
+            if (ready_map[curr_id] == 0)
+            {
+                id_open[curr_id] = false;  // remove it from open
+                id_closed[curr_id] = true;  // mark curr_id as expanded
+                for (auto child : parent_children[curr_id])
+                {
+                    if (id_closed[child.first])  // check if a closed node is added into id_que as a child
+                        std::cout << "error: re-add an expanded node" << std::endl;
+                    else if (!id_closed[child.first] && id_open[child.first])  // not closed but still in open
+                        ready_map[child.first] = ready_map[child.first] - 1;
+                    else if (!id_closed[child.first] && !id_open[child.first])  // first time visit this child
+                    {
+                        ready_map[child.first] = ready_map[child.first] - 1;
+                        if (ready_map[child.first] == 0)
+                            id_que.push_front(child.first);
+                        else
+                            id_que.push_back(child.first);
+                    }
+                    // todo needs to have trigger for ready_map decrease the counter until it is 0 to denote a node is ready
+                    ready_map[child.first] = ready_map[child.first] - 1;
+
+                }
+            }
+            if (ready_map[curr_id] < 0)
+                assert(false);
+            else
+            {
+                id_que.push_back(curr_id);  // not ready, push it to the tail of the que
+            }
+
+        }
 
 
 
