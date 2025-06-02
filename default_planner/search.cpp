@@ -287,6 +287,7 @@ namespace DefaultPlanner {
             int curr_id = id_que.front();
             id_que.pop_front();
 
+
             if (ready_map[curr_id] == 0)
             {
                 id_open[curr_id] = false;  // remove it from open
@@ -304,18 +305,14 @@ namespace DefaultPlanner {
                             id_que.push_front(child.first);
                         else
                             id_que.push_back(child.first);
+                        id_open[child.first] = true;
                     }
-                    // todo needs to have trigger for ready_map decrease the counter until it is 0 to denote a node is ready
-                    ready_map[child.first] = ready_map[child.first] - 1;
-
                 }
             }
-            if (ready_map[curr_id] < 0)
+            else if (ready_map[curr_id] < 0)
                 assert(false);
             else
-            {
                 id_que.push_back(curr_id);  // not ready, push it to the tail of the que
-            }
 
         }
 
