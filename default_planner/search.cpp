@@ -357,16 +357,10 @@ namespace DefaultPlanner {
 
 
 
-
-
-
-
-
         return *goal_node;
     }
 
 
 
-
-
+    
 }
