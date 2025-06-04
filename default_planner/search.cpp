@@ -338,6 +338,14 @@ namespace DefaultPlanner {
 
                     // update the weight since the curr_id (parent) is ready
                     traj[curr_id][child.first] = curr_weight;
+
+                    // update the flow table
+                    int loc = child.first;
+                    int prev_loc = curr_id;
+                    diff = loc - prev_loc;
+                    d = get_d(diff, env);
+
+                    flow[prev_loc].d[d] += curr_weight;
                 }
             }
             else if (ready_map[curr_id] < 0)
