@@ -45,7 +45,7 @@ namespace DefaultPlanner{
 
 //    typedef std::unordered_map<int, std::vector<int>> MDD_Traj;  //first int is id, second vector of int is parents' ids
 
-    // forward recording, first int is the parent, second ints are children
+    // forward recording, first int is the parent, second int is the child, float is the weight
     typedef std::unordered_map<int, std::unordered_map<int, float>> MDD_Traj;
 
 	struct PIBT_C{
