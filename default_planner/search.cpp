@@ -295,7 +295,7 @@ namespace DefaultPlanner {
             if (ready_map[curr_id] == 0)
             {
                 // print out the weight for review
-                std::cout << "node:" << curr_id << " " << id_weight[curr_id] << std::endl;
+//                std::cout << "node:" << curr_id << " " << id_weight[curr_id] << std::endl;
 
 
                 id_open[curr_id] = false;  // remove it from open
@@ -307,6 +307,7 @@ namespace DefaultPlanner {
                 {
                     curr_weight = id_weight[curr_id] / parent_children[curr_id].size();
                 }
+
                 for (auto child : parent_children[curr_id])
                 {
                     if (id_closed[child.first])  // check if a closed node is added into id_que as a child
@@ -334,6 +335,9 @@ namespace DefaultPlanner {
                             id_que.push_back(child.first);
                         id_open[child.first] = true;
                     }
+
+                    // update the weight since the curr_id (parent) is ready
+                    traj[curr_id][child.first] = curr_weight;
                 }
             }
             else if (ready_map[curr_id] < 0)
