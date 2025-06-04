@@ -17,20 +17,18 @@ void remove_mdd_traj(TrajLNS& lns, int agent){
 
     for (auto each : lns.mdd_trajs[agent])
     {
-        loc = each.first;
+        prev_loc = each.first;
 
-        for (auto parent: each.second)
+        for (auto child: each.second)
         {
-            prev_loc = parent.first;
+            loc = child.first;
             diff = loc - prev_loc;
             d = get_d(diff, lns.env);
-            lns.flow[prev_loc].d[d] -= parent.second;
+            lns.flow[prev_loc].d[d] -= child.second;
         }
     }
 
     lns.mdd_trajs[agent].clear();
-
-
 }
 
 
