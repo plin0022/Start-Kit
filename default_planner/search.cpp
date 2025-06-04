@@ -266,6 +266,10 @@ namespace DefaultPlanner {
             }
         }
 
+        // weight table
+        std::vector<float> id_weight(env->map.size(), 0);
+        id_weight[start] = 1;
+
         // open and closed
         std::vector<bool> id_open(env->map.size(),false);
         std::vector<bool> id_closed(env->map.size(),false);
@@ -290,17 +294,40 @@ namespace DefaultPlanner {
 
             if (ready_map[curr_id] == 0)
             {
+                // print out the weight for review
+                std::cout << "node:" << curr_id << " " << id_weight[curr_id] << std::endl;
+
+
                 id_open[curr_id] = false;  // remove it from open
                 id_closed[curr_id] = true;  // mark curr_id as expanded
+                float curr_weight = 0;
+
+                // setting weight for propagation
+                if (parent_children[curr_id].size() != 0)
+                {
+                    curr_weight = id_weight[curr_id] / parent_children[curr_id].size();
+                }
                 for (auto child : parent_children[curr_id])
                 {
                     if (id_closed[child.first])  // check if a closed node is added into id_que as a child
+                    {
                         std::cout << "error: re-add an expanded node" << std::endl;
+                        assert(false);
+                    }
                     else if (!id_closed[child.first] && id_open[child.first])  // not closed but still in open
+                    {
                         ready_map[child.first] = ready_map[child.first] - 1;
+                        id_weight[child.first] = id_weight[child.first] + curr_weight;
+                    }
                     else if (!id_closed[child.first] && !id_open[child.first])  // first time visit this child
                     {
                         ready_map[child.first] = ready_map[child.first] - 1;
+
+                        if (id_weight[child.first] == 0)
+                            id_weight[child.first] = curr_weight;
+                        else
+                            assert(false);
+
                         if (ready_map[child.first] == 0)
                             id_que.push_front(child.first);
                         else
