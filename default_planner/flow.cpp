@@ -17,7 +17,7 @@ void remove_traj(TrajLNS& lns, int agent){
     if (lns.trajs[agent].size() <= 1){
         return;
     }
-    int loc, prev_loc, diff, d, rev_d, to;
+    int loc, prev_loc, diff, d, to;
 
     to = lns.trajs[agent].size();
 
@@ -26,7 +26,6 @@ void remove_traj(TrajLNS& lns, int agent){
         prev_loc = lns.trajs[agent][j-1];
         diff = loc - prev_loc;
         d = get_d(diff, lns.env);
-        rev_d = (d < 2) ? (d + 2) : (d - 2);
 
 
         lns.flow[prev_loc].d[d] -= 1;
@@ -44,13 +43,12 @@ void add_traj(TrajLNS& lns, int agent){
     if (lns.trajs[agent].size() <= 1){
         return;
     }
-    int loc, prev_loc, diff, d, rev_d;
+    int loc, prev_loc, diff, d;
     for (int j = 1; j < lns.trajs[agent].size(); j++){
         loc = lns.trajs[agent][j];
         prev_loc = lns.trajs[agent][j-1];
         diff = loc - prev_loc;
         d = get_d(diff, lns.env);
-        rev_d = (d < 2) ? (d + 2) : (d - 2);
 
         lns.flow[prev_loc].d[d] += 1;
 
@@ -166,23 +164,13 @@ void update_traj(TrajLNS& lns, int i){
     int goal = lns.tasks[i];
 
 
-//    lns.goal_nodes[i] = astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal], lns.heuristics,
-//                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
-
-//        astar(lns.env,lns.constraint_flow, lns.flow, lns.heuristics[goal],
-//              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
-
-//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.flow_time,lns.heuristics[goal],
-//                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
 // directly use traffic_heuristic here
 
 
-        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
+    lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
+                              lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
     add_traj(lns,i);

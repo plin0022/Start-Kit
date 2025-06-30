@@ -106,19 +106,6 @@ namespace DefaultPlanner{
         for(int i=0; i<env->num_of_agents; i++)
         {
             //initialise the shortest distance heuristic table for the goal location of the agent
-//            if ( ( std::chrono::steady_clock::now() < end_time) ){
-//                for(int j=0; j<env->goal_locations[i].size(); j++)
-//                {
-//                    int goal_loc = env->goal_locations[i][j].first;
-//                    if (trajLNS.heuristics.at(goal_loc).empty()){
-//                        init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
-//                        init_flextable(trajLNS.heuristics[goal_loc],env,goal_loc);
-//                        count++;
-//                    }
-//                }
-//            }
-
-
             if ( ( std::chrono::steady_clock::now() < end_time) ){
                 for(int j=0; j<env->goal_locations[i].size(); j++)
                 {
@@ -126,10 +113,6 @@ namespace DefaultPlanner{
                     if (trajLNS.heuristics.at(goal_loc).empty()){
                         init_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
                         count++;
-                    }
-                    if (trajLNS.heuristics.at(goal_loc).traffic_empty())
-                    {
-                        init_traffic_heuristic(trajLNS.heuristics[goal_loc],env,goal_loc);
                     }
                 }
             }
@@ -178,20 +161,21 @@ namespace DefaultPlanner{
 
         }
 
-        // compute the congestion minimised guide path for the agents that need guide path update
-        for (int i = 0; i < env->num_of_agents;i++){
-            if (std::chrono::steady_clock::now() >end_time)
-                break;
-            if (require_guide_path[i]){
-                if (!trajLNS.trajs[i].empty())
-                    remove_traj(trajLNS, i);
-                update_traj(trajLNS, i);
-            }
+//        // compute the congestion minimised guide path for the agents that need guide path update
+//        for (int i = 0; i < env->num_of_agents;i++){
+//            if (std::chrono::steady_clock::now() >end_time)
+//                break;
+//            if (require_guide_path[i]){
+//                if (!trajLNS.trajs[i].empty())
+//                    remove_traj(trajLNS, i);
+//                update_traj(trajLNS, i);
+//            }
+//
+//        }
 
-        }
 
-        // iterate and recompute the guide path to optimise traffic flow
-        std::unordered_set<int> updated;
+//        // iterate and recompute the guide path to optimise traffic flow
+//        std::unordered_set<int> updated;
 //        frank_wolfe(trajLNS, updated,end_time);
 
         // sort agents based on the current priority
@@ -230,30 +214,6 @@ namespace DefaultPlanner{
 
 
         prev_states = next_states;
-
-
-//        // clear flex_table for those arrive goals
-//        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
-//        {
-//            int curr_goal = trajLNS.tasks.at(agent_i);
-//            if (prev_states[agent_i].location == curr_goal)
-//                init_flextable(trajLNS.heuristics[curr_goal], env, curr_goal);
-//        }
-
-
-
-//        for (int agent_i = 0; agent_i < env->num_of_agents; agent_i++)
-//        {
-//            int curr_goal = trajLNS.tasks.at(agent_i);
-//            if (prev_states[agent_i].location == curr_goal)
-//            {
-//                init_traffic_heuristic(trajLNS.heuristics[curr_goal], env, curr_goal);
-//            }
-//
-//        }
-
-
-
         return;
 
     };
