@@ -20,20 +20,7 @@ void init_neighbor(SharedEnvironment* env);
 
 void init_heuristic(HeuristicTable& ht, SharedEnvironment* env, int goal_location);
 
-void init_flextable(HeuristicTable& ht, SharedEnvironment* env, int goal_location);
-
 int get_heuristic(HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns);
-
-// traffic
-void init_traffic_heuristic(HeuristicTable& ht, SharedEnvironment* env, int goal_location);
-
-int get_traffic_heuristic(TrajLNS& lns, HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns);
-
-//
-
-uint get_flex(HeuristicTable& ht, SharedEnvironment* env, int source, Neighbors* ns);
-
-uint get_flex(TrajLNS& lns, int ai, int source, Neighbors* ns);
 
 int get_h(SharedEnvironment* env, int source, int target);
 

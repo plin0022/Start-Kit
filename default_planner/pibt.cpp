@@ -10,7 +10,7 @@
 namespace DefaultPlanner{
 
 
-int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
+int get_gp_h(TrajLNS& lns, int ai, int target){
     int min_heuristic;
 
 
@@ -56,13 +56,13 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
 
 		assert(validateMove(prev_loc, neighbor, lns.env));
 
-		int min_heuristic = get_gp_h(lns, curr_id, neighbor, prev_loc);
+		int min_heuristic = get_gp_h(lns, curr_id, neighbor);
 
 
 		successors.emplace_back(neighbor,min_heuristic,-1,rand());
 	}
 
-	int wait_heuristic = get_gp_h(lns, curr_id, prev_loc, prev_loc);
+	int wait_heuristic = get_gp_h(lns, curr_id, prev_loc);
 
 
 	successors.emplace_back(prev_loc, wait_heuristic,-1,rand());
