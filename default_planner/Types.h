@@ -60,7 +60,6 @@ namespace DefaultPlanner{
 			int direction;
 			int value;
 			int other;
-            bool closed = false;
 
 			unsigned int priority;
 			unsigned int get_priority() const { return priority; }
@@ -70,8 +69,6 @@ namespace DefaultPlanner{
 			HNode() = default;
 			HNode(int location,int direction, int value) : location(location), direction(direction), value(value) {}
 
-            bool is_closed() const { return closed; }
-            void close() { closed = true; }
 
 			// the following is used to compare nodes in the OPEN list
 			struct compare_node
@@ -84,13 +81,6 @@ namespace DefaultPlanner{
 		};
 
 
-        struct compare_node
-        {
-            bool operator()(const HNode& n1, const HNode& n2) const
-            {
-                return n1.value < n2.value;
-            }
-        };
 
     struct HeuristicTable{
 		std::vector<int> htable;
