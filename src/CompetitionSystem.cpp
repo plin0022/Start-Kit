@@ -199,7 +199,7 @@ void BaseSystem::initialize()
     env->map = map.map;
 
 
-    
+
     // // bool succ = load_records(); // continue simulating from the records
     // timestep = 0;
     // curr_states = starts;
@@ -233,7 +233,7 @@ void BaseSystem::saveResults(const string &fileName, int screen) const
 {
     json js;
     // Save action model
-    js["actionModel"] = "MAPF_T";
+    js["actionModel"] = "MAPF";
     js["version"] = "2024 LoRR";
 
     // std::string feasible = fast_mover_feasible ? "Yes" : "No";
