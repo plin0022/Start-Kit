@@ -18,8 +18,7 @@ public:
     int cols;
     std::string map_name;
     std::vector<int> map;
-
-    std::vector<bool> corridor_nodes;
+    
 
     std::string file_storage_path;
 
