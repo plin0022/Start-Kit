@@ -13,13 +13,6 @@ namespace DefaultPlanner{
 int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
     int min_heuristic;
 
-    if (!lns.flow_heuristics[ai].empty())
-    {
-        if (get_traffic_heuristic(lns, lns.flow_heuristics[ai], lns.env, lns.heu_cur_at[ai],
-                                  lns.start_locs[ai], &(lns.neighbors)) != 0)
-            assert(false);
-    }
-
 
     if (!lns.flow_heuristics[ai].empty() && (lns.heu_cur_at[ai] == lns.tasks[ai]))
     {
@@ -30,7 +23,6 @@ int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
         min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
     else
         min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
-
 
 
 
