@@ -55,7 +55,10 @@ struct FlowHeuristic{
 class TrajLNS{
     public:
     SharedEnvironment* env;
+
     std::vector<int> tasks;
+    std::vector<int> prev_tasks;
+    std::vector<int> heu_cur_at;
 
     std::vector<int> start_locs;
 
@@ -104,7 +107,9 @@ class TrajLNS{
         env(env),
         trajs(env->num_of_agents),
         mdd_trajs(env->num_of_agents),
+        prev_tasks(env->num_of_agents),
         tasks(env->num_of_agents),
+        heu_cur_at(env->num_of_agents, -1),
         start_locs(env->num_of_agents),
         flow(env->map.size(), Float4({0,0,0,0})),
         heuristics(heuristics),

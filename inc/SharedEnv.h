@@ -18,7 +18,7 @@ public:
     int cols;
     std::string map_name;
     std::vector<int> map;
-    
+
 
     std::string file_storage_path;
 
