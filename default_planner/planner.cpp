@@ -98,7 +98,6 @@ namespace DefaultPlanner{
                 dummy_goals.at(i) = env->curr_states.at(i).location;
                 trajLNS.start_locs[i] = env->curr_states.at(i).location;
                 trajLNS.tasks[i] = env->curr_states.at(i).location;
-                trajLNS.prev_tasks[i] = env->curr_states.at(i).location;
             }
         }
 
@@ -129,9 +128,6 @@ namespace DefaultPlanner{
                 p[i] = p_copy[i];
             }
             else{
-                if (trajLNS.tasks[i] != env->goal_locations[i].front().first)
-                    trajLNS.prev_tasks[i] = trajLNS.tasks[i];
-
                 trajLNS.tasks[i] = env->goal_locations[i].front().first;
             }
 

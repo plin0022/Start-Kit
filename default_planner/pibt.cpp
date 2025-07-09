@@ -13,12 +13,18 @@ namespace DefaultPlanner{
 int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
     int min_heuristic;
 
+    if (!lns.flow_heuristics[ai].empty())
+    {
+        if (get_traffic_heuristic(lns, lns.flow_heuristics[ai], lns.env, lns.heu_cur_at[ai],
+                                  lns.start_locs[ai], &(lns.neighbors)) != 0)
+            assert(false);
+    }
+
 
     if (!lns.flow_heuristics[ai].empty() && (lns.heu_cur_at[ai] == lns.tasks[ai]))
     {
         min_heuristic = get_traffic_heuristic(lns, lns.flow_heuristics[ai],
-                                              lns.env, target, lns.start_locs[ai], &(lns.neighbors),
-                                              lns.tasks.at(ai), lns.prev_tasks.at(ai));
+                                              lns.env, target, lns.start_locs[ai], &(lns.neighbors));
     }
     else if (!lns.heuristics[lns.tasks.at(ai)].empty())
         min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
@@ -94,17 +100,6 @@ bool causalPIBT(int curr_id, int higher_id,std::vector<State>& prev_states,
             return a.heuristic < b.heuristic;
         });
 
-
-    if (successors[0].heuristic == wait_heuristic && successors[0].location != lns.tasks[curr_id])
-    {
-        std::cout<<"agent: "<< curr_id<<std::endl;
-        std::cout<<"pre_loc: "<< prev_loc<<std::endl;
-        std::cout<<"tasks: "<< lns.tasks[curr_id]<<std::endl;
-        std::cout<<"goal_loc: "<< lns.env->goal_locations[curr_id].front().first<<std::endl;
-        std::cout<<"prev_tasks: "<< lns.prev_tasks[curr_id]<<std::endl;
-
-        int asd = 123;
-    }
 
 
     for (auto& next: successors){

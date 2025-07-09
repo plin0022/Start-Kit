@@ -111,12 +111,10 @@ void init_traffic_heuristic(FlowHeuristic& ht, SharedEnvironment* env, int goal,
 // Reverse Resumable A*
 // https://doi.org/10.1609/aiide.v1i1.18726
 int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,
-                          int source, int start, Neighbors* ns, int goal, int prev_goal)
+                          int source, int start, Neighbors* ns)
 {
     if (ht.mem.has_node(source) && ht.mem.get_node(source)->is_closed())
-    {
         return ht.htable[source];
-    }
 
 
 
@@ -190,9 +188,7 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
         }
 
         if (source == curr->id)
-        {
             return curr->g;
-        }
 
 
     }
