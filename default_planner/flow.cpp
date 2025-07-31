@@ -200,8 +200,8 @@ void update_traj(TrajLNS& lns, int i){
                               lns.mdd_trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
-//    add_traj(lns,i);
-//    update_dist_2_path(lns,i);
+    // update its last_replan_t
+    lns.fw_metrics[i].last_replan_t = lns.env->curr_timestep;
 }
 
 }
