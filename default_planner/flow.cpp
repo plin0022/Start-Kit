@@ -119,11 +119,6 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
     std::sort(replan_order.begin(), replan_order.end(),
     [](FW_Metric& a, FW_Metric& b)
     {
-        if (a.deviation > b.deviation)
-            return true;
-        else if ( a.deviation < b.deviation)
-            return false;
-        
         if (a.last_replan_t < b.last_replan_t)
             return true;
         else if (a.last_replan_t > b.last_replan_t)
@@ -138,11 +133,21 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
         index = count%lns.env->num_of_agents;
         a = replan_order[index].id;
         count++;
-        if (lns.traj_dists[a].empty() || lns.trajs[a].empty()){
+        if (lns.mdd_trajs[a].empty()){
             continue;
         }
-        remove_traj(lns,a);
-        update_traj(lns,a);
+
+        remove_mdd_traj(lns, a);
+
+        // initialize the goal node
+        lns.start_locs[a] = lns.env->curr_states.at(a).location;
+        lns.flow_heuristics[a].reset();
+        init_traffic_heuristic(lns.flow_heuristics[a], lns.env, lns.tasks[a],
+                               lns.start_locs[a]);
+        lns.heu_cur_at[a] = lns.tasks[a];
+
+
+        update_traj(lns, a);
         
     }
     return;

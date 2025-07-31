@@ -191,8 +191,8 @@ namespace DefaultPlanner{
 
 
         // iterate and recompute the guide path to optimise traffic flow
-//        std::unordered_set<int> updated;
-//        frank_wolfe(trajLNS, updated,end_time);
+        std::unordered_set<int> updated;
+        frank_wolfe(trajLNS, updated,end_time);
 
         // sort agents based on the current priority
         std::sort(ids.begin(), ids.end(), [&](int a, int b) {
