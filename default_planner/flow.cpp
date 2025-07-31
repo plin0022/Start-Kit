@@ -106,11 +106,6 @@ void update_fw_metrics(TrajLNS& lns){
         lns.fw_metrics[i].id = i;
         lns.fw_metrics[i].rand = rand();
         lns.fw_metrics[i].deviation = 0;
-        if (lns.traj_dists[i].empty() || lns.trajs[i].empty())
-            continue;
-        std::pair<int,int> dists =  get_source_2_path(lns.traj_dists[i], lns.env, lns.env->curr_states[i].location, &(lns.neighbors));
-        assert(dists.first >= 0 );
-        lns.fw_metrics[i].deviation = dists.first;
     }
     return;
 }
@@ -187,12 +182,6 @@ void update_traj(TrajLNS& lns, int i){
     int goal = lns.tasks[i];
 
     assert(start == lns.start_locs[i]);
-
-
-//        // single
-//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-//                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
 
 
     // mdd and add_mdd_traj
