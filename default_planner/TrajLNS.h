@@ -10,6 +10,9 @@
 
 #include <set>
 
+#include <algorithm>
+#include <random>
+
 namespace DefaultPlanner{
 // enum ADAPTIVE {RANDOM, CONGESTION, COUNT};
 enum ADAPTIVE {RANDOM, CONGESTION, DEVIATION, COUNT};
@@ -59,6 +62,8 @@ class TrajLNS{
     std::vector<int> tasks;
     std::vector<int> heu_cur_at;
 
+    std::vector<bool> is_sample;
+
     std::vector<int> start_locs;
 
     TimePoint start_time;
@@ -102,12 +107,29 @@ class TrajLNS{
         }
     }
 
+    void init_is_sample(int ratio)
+    {
+        std::vector<int> indices(env->num_of_agents);
+        for (int i = 0; i < env->num_of_agents; ++i) indices[i] = i;
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::shuffle(indices.begin(), indices.end(), gen);
+
+        for (int i = 0; i < env->num_of_agents*ratio/100; ++i)
+        {
+            is_sample[indices[i]] = true;
+        }
+    }
+
+
     TrajLNS(SharedEnvironment* env, std::vector<HeuristicTable>& heuristics, Neighbors& neighbors):
         env(env),
         trajs(env->num_of_agents),
         mdd_trajs(env->num_of_agents),
         tasks(env->num_of_agents),
         heu_cur_at(env->num_of_agents, -1),
+        is_sample(env->num_of_agents, false),
         start_locs(env->num_of_agents),
         flow(env->map.size(), Float4({0,0,0,0})),
         heuristics(heuristics),
