@@ -176,7 +176,7 @@ namespace DefaultPlanner{
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
-                if (!trajLNS.mdd_trajs[i].empty())
+                if (!trajLNS.mdd_trajs[i].empty() && trajLNS.is_sample[i])
                     remove_mdd_traj(trajLNS, i);
 
                 // initialize the goal node
@@ -186,7 +186,8 @@ namespace DefaultPlanner{
                                        trajLNS.start_locs[i]);
                 trajLNS.heu_cur_at[i] = trajLNS.tasks[i];
 
-                update_traj(trajLNS, i);
+                if (trajLNS.is_sample[i])
+                    update_traj(trajLNS, i);
             }
 
         }
