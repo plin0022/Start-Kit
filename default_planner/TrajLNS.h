@@ -112,9 +112,11 @@ class TrajLNS{
         std::vector<int> indices(env->num_of_agents);
         for (int i = 0; i < env->num_of_agents; ++i) indices[i] = i;
 
+        // generative AI
         std::random_device rd;
         std::mt19937 gen(rd());
         std::shuffle(indices.begin(), indices.end(), gen);
+        //
 
         for (int i = 0; i < env->num_of_agents*ratio/100; ++i)
         {

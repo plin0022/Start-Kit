@@ -136,7 +136,7 @@ namespace DefaultPlanner{
 
             // check if the agent need a guide path update
             require_guide_path[i] = false;
-            if (trajLNS.mdd_trajs[i].empty() || trajLNS.heu_cur_at[i] != trajLNS.tasks[i])
+            if ((trajLNS.mdd_trajs[i].empty() && trajLNS.is_sample[i]) || trajLNS.heu_cur_at[i] != trajLNS.tasks[i])
             {
                 require_guide_path[i] = true;
             }
