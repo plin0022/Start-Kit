@@ -88,10 +88,12 @@ namespace DefaultPlanner{
 
         //cap the time for distance to goal heuristic table initialisation to half of the given time_limit;
         int pibt_time = PIBT_RUNTIME_PER_100_AGENTS * env->num_of_agents/100;
-        if (env->num_of_agents == 500)
-            pibt_time = pibt_time + 220;
+
+        if (env->num_of_agents <= 6000)
+            pibt_time = pibt_time + 330;
         else
-            pibt_time = pibt_time + 400;
+            pibt_time = pibt_time + 310;
+
 
         //traffic flow assignment end time, leave PIBT_RUNTIME_PER_100_AGENTS ms per 100 agent and TRAFFIC_FLOW_ASSIGNMENT_END_TIME_TOLERANCE ms for computing pibt actions;
         TimePoint end_time = start_time + std::chrono::milliseconds(time_limit - pibt_time - TRAFFIC_FLOW_ASSIGNMENT_END_TIME_TOLERANCE);
