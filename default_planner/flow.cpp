@@ -138,6 +138,9 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
         }
 
         remove_mdd_traj(lns, a);
+
+        lns.start_locs[a] = lns.env->curr_states.at(a).location;
+
         update_traj(lns, a);
         
     }
