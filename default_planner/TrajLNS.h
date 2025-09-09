@@ -98,9 +98,12 @@ class TrajLNS{
 
     void init_all_mem()
     {
-        for (int i = 0; i < env->num_of_agents; i++)
+        for (int i = 0; i < env->map.size(); i++)
         {
-            flow_heuristics[i].mem.init(env->map.size(), env);
+            if (env->map[i] == 1)
+                continue;
+            else
+                goal_heuristics[i].mem.init(env->map.size(), env);
         }
     }
 
