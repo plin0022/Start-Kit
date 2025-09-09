@@ -108,6 +108,19 @@ void init_traffic_heuristic(FlowHeuristic& ht, SharedEnvironment* env, int goal,
 }
 
 
+void init_goal_heuristic(FlowHeuristic& ht, SharedEnvironment* env, int goal)
+{
+    // initialize tables
+    ht.htable.resize(env->map.size(),MAX_TIMESTEP);
+
+
+    // generate an open that can save nodes
+    s_node *root = ht.mem.generate_node(goal, 0, 0, 0, 0, 0);
+    ht.htable[goal] = 0;
+    ht.open.push(root);
+}
+
+
 // Reverse Resumable A*
 // https://doi.org/10.1609/aiide.v1i1.18726
 int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,

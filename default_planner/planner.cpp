@@ -185,12 +185,20 @@ namespace DefaultPlanner{
                 if (!trajLNS.mdd_trajs[i].empty())
                     remove_mdd_traj(trajLNS, i);
 
+//                // initialize the goal node
+//                trajLNS.start_locs[i] = env->curr_states.at(i).location;
+//                trajLNS.flow_heuristics[i].reset();
+//                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,trajLNS.tasks[i],
+//                                       trajLNS.start_locs[i]);
+//                trajLNS.heu_cur_at[i] = trajLNS.tasks[i];
+
+
                 // initialize the goal node
                 trajLNS.start_locs[i] = env->curr_states.at(i).location;
-                trajLNS.flow_heuristics[i].reset();
-                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,trajLNS.tasks[i],
-                                       trajLNS.start_locs[i]);
+                trajLNS.goal_heuristics[trajLNS.tasks.at(i)].reset();
+                init_goal_heuristic(trajLNS.goal_heuristics[trajLNS.tasks.at(i)], env, trajLNS.tasks[i]);
                 trajLNS.heu_cur_at[i] = trajLNS.tasks[i];
+
 
                 update_traj(trajLNS, i);
             }
@@ -198,9 +206,9 @@ namespace DefaultPlanner{
         }
 
 
-        // iterate and recompute the guide path to optimise traffic flow
-        std::unordered_set<int> updated;
-        frank_wolfe(trajLNS, updated,end_time);
+//        // iterate and recompute the guide path to optimise traffic flow
+//        std::unordered_set<int> updated;
+//        frank_wolfe(trajLNS, updated,end_time);
 
         // sort agents based on the current priority
         std::sort(ids.begin(), ids.end(), [&](int a, int b) {
