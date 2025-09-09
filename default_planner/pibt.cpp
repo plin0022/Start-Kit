@@ -14,10 +14,16 @@ int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
     int min_heuristic;
 
 
-    if (!lns.flow_heuristics[ai].empty() && (lns.heu_cur_at[ai] == lns.tasks[ai]))
+//    if (!lns.flow_heuristics[ai].empty() && (lns.heu_cur_at[ai] == lns.tasks[ai]))
+//    {
+//        min_heuristic = get_traffic_heuristic(lns, lns.flow_heuristics[ai],
+//                                              lns.env, target, lns.start_locs[ai], &(lns.neighbors));
+//    }
+
+    if (!lns.goal_heuristics[lns.tasks.at(ai)].empty() && (lns.heu_cur_at[ai] == lns.tasks[ai]))
     {
-        min_heuristic = get_traffic_heuristic(lns, lns.flow_heuristics[ai],
-                                              lns.env, target, lns.start_locs[ai], &(lns.neighbors));
+        min_heuristic = get_goal_heuristic(lns, lns.goal_heuristics[lns.tasks.at(ai)],
+                                              lns.env, target, &(lns.neighbors));
     }
     else if (!lns.heuristics[lns.tasks.at(ai)].empty())
         min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
@@ -25,19 +31,6 @@ int get_gp_h(TrajLNS& lns, int ai, int target, int curr_loc){
         min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
 
 
-
-//    if (!lns.heuristics[lns.tasks.at(ai)].empty())
-//        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
-//    else
-//        min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
-
-
-//    if (!lns.traj_dists.empty() && !lns.traj_dists[ai].empty())
-//        min_heuristic = get_dist_2_path(lns.traj_dists[ai], lns.env, target, &(lns.neighbors));
-//    else if (!lns.heuristics[lns.tasks.at(ai)].empty())
-//        min_heuristic = get_heuristic(lns.heuristics[lns.tasks.at(ai)], lns.env, target, &(lns.neighbors));
-//    else
-//        min_heuristic = manhattanDistance(target,lns.tasks.at(ai),lns.env);
     
     return min_heuristic;
 }

@@ -211,7 +211,91 @@ int get_traffic_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* en
 }
 
 
+int get_goal_heuristic(TrajLNS& lns, FlowHeuristic& ht, SharedEnvironment* env,
+                          int source, Neighbors* ns)
+{
+    if (ht.mem.has_node(source) && ht.mem.get_node(source)->is_closed())
+        return ht.htable[source];
 
+
+
+    std::vector<int> neighbors;
+    int cost, diff, d, temp_op, temp_vertex;
+
+    while (!ht.open.empty())
+    {
+        s_node *curr = ht.open.pop();
+        assert(ht.htable[curr->id] == curr->g);
+        ht.htable[curr->id] = curr->g;
+        curr->close();
+
+
+        getNeighborLocs(ns,neighbors, curr->id);
+        for (int next : neighbors)
+        {
+            diff = curr->id - next;
+            d = get_d(diff, env);
+
+            temp_op = ((lns.flow[next].d[d] + 1) *
+                       lns.flow[curr->id].d[(d + 2) % 4]);
+
+            //all vertex flow
+            //the sum of all out going edge flow is the same as the total number of vertex visiting.
+            temp_vertex = 1;
+            for (int j = 0; j < 4; j++) {
+                temp_vertex += lns.flow[curr->id].d[j];
+            }
+
+
+            //set current cost for reversed direction
+            cost = curr->g + 1 + temp_op + (temp_vertex - 1) / 2;
+
+
+            assert(next >= 0 && next < env->map.size());
+
+
+            if (!ht.mem.has_node(next))
+            {
+                s_node *next_node = ht.mem.generate_node(next, cost, 0, 0, 0, 0);
+                ht.open.push(next_node);
+                ht.htable[next] = cost;
+            }
+            else
+            {
+                s_node *existing = ht.mem.get_node(next);
+                assert(existing->g == ht.htable[next]);
+
+                if (!existing->is_closed())
+                {
+                    if (cost < existing->g)
+                    {
+                        existing->g = cost;
+                        ht.htable[next] = cost;
+                        ht.open.decrease_key(existing);
+                    }
+                }
+                else
+                {
+                    if (cost < existing->g)
+                    {
+                        std::cout << "error in astar: re-expansion" << std::endl;
+                        assert(false);
+                        exit(1);
+                    }
+                }
+            }
+
+        }
+
+        if (source == curr->id)
+            return curr->g;
+
+
+    }
+
+    assert(false);
+    return MAX_TIMESTEP;
+}
 
 
 
