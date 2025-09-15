@@ -144,7 +144,7 @@ namespace DefaultPlanner{
 
             // check if the agent need a guide path update
             require_guide_path[i] = false;
-            if (trajLNS.mdd_trajs[i].empty() || trajLNS.heu_cur_at[i] != trajLNS.tasks[i])
+            if ((trajLNS.mdd_trajs[i].empty() && trajLNS.is_sample[i]) || trajLNS.heu_cur_at[i] != trajLNS.tasks[i])
             {
                 require_guide_path[i] = true;
             }
@@ -184,15 +184,8 @@ namespace DefaultPlanner{
             if (std::chrono::steady_clock::now() >end_time)
                 break;
             if (require_guide_path[i]){
-                if (!trajLNS.mdd_trajs[i].empty())
+                if (!trajLNS.mdd_trajs[i].empty() && trajLNS.is_sample[i])
                     remove_mdd_traj(trajLNS, i);
-
-//                // initialize the goal node
-//                trajLNS.start_locs[i] = env->curr_states.at(i).location;
-//                trajLNS.flow_heuristics[i].reset();
-//                init_traffic_heuristic(trajLNS.flow_heuristics[i], env,trajLNS.tasks[i],
-//                                       trajLNS.start_locs[i]);
-//                trajLNS.heu_cur_at[i] = trajLNS.tasks[i];
 
 
                 // initialize the goal node
@@ -202,7 +195,8 @@ namespace DefaultPlanner{
                 trajLNS.heu_cur_at[i] = trajLNS.tasks[i];
 
 
-                update_traj(trajLNS, i);
+                if (trajLNS.is_sample[i])
+                    update_traj(trajLNS, i);
             }
 
         }
