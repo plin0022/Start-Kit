@@ -58,6 +58,8 @@ namespace DefaultPlanner{
             
             trajLNS.init_all_mem();
 
+            trajLNS.init_is_sample(30);  // initialize is_sample
+
             //assign intial priority to each agent
             std::shuffle(ids.begin(), ids.end(), mt1);
             for (int i = 0; i < ids.size();i++){
