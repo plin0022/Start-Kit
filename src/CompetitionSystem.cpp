@@ -77,7 +77,7 @@ void BaseSystem::plan(int & timeout_timesteps)
 
     while (timestep + timeout_timesteps < simulation_time){
 
-        if (future.wait_for(std::chrono::milliseconds(plan_time_limit)) == std::future_status::ready)
+        if (future.wait_for(std::chrono::milliseconds(plan_time_limit + 20000)) == std::future_status::ready)
             {
                 task_td.join();
                 started = false;

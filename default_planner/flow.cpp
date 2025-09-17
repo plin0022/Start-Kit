@@ -122,20 +122,15 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
     assert(replan_order.size() == lns.env->num_of_agents);
 
     std::sort(replan_order.begin(), replan_order.end(),
-    [](FW_Metric& a, FW_Metric& b)
-    {
-        if (a.deviation > b.deviation)
-            return true;
-        else if ( a.deviation < b.deviation)
-            return false;
-        
-        if (a.last_replan_t < b.last_replan_t)
-            return true;
-        else if (a.last_replan_t > b.last_replan_t)
-            return false;
+              [](FW_Metric& a, FW_Metric& b)
+              {
+                  if (a.last_replan_t < b.last_replan_t)
+                      return true;
+                  else if (a.last_replan_t > b.last_replan_t)
+                      return false;
 
-        return a.rand > b.rand;
-    });
+                  return a.rand > b.rand;
+              });
 
     int count=0;
     int a, index;
@@ -143,12 +138,24 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
         index = count%lns.env->num_of_agents;
         a = replan_order[index].id;
         count++;
-        if (lns.traj_dists[a].empty() || lns.trajs[a].empty()){
+        if (lns.mdd_trajs[a].empty()){
             continue;
         }
-        remove_traj(lns,a);
-        update_traj(lns,a);
-        
+
+        if (lns.is_sample[a])
+        {
+            remove_mdd_traj(lns, a);
+            update_traj(lns, a);
+        }
+
+
+//        // initialize the goal node
+//        lns.start_locs[a] = lns.env->curr_states.at(a).location;
+//        lns.flow_heuristics[a].reset();
+//        init_traffic_heuristic(lns.flow_heuristics[a], lns.env, lns.tasks[a],
+//                               lns.start_locs[a]);
+//        lns.heu_cur_at[a] = lns.tasks[a];
+
     }
     return;
 
@@ -186,13 +193,6 @@ void update_traj(TrajLNS& lns, int i){
     int start = lns.env->curr_states[i].location;
     int goal = lns.tasks[i];
 
-    assert(start == lns.start_locs[i]);
-
-
-//        // single
-//        lns.goal_nodes[i] = astar(lns.env,lns.flow, lns.heuristics[goal],
-//                                  lns.trajs[i],lns.mem,start,goal, &(lns.neighbors));
-
 
 
     // mdd and add_mdd_traj
@@ -200,8 +200,8 @@ void update_traj(TrajLNS& lns, int i){
                               lns.mdd_trajs[i],lns.mem,start,goal, &(lns.neighbors));
 
 
-//    add_traj(lns,i);
-//    update_dist_2_path(lns,i);
+    // update its last_replan_t
+    lns.fw_metrics[i].last_replan_t = lns.env->curr_timestep;
 }
 
 }
