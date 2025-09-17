@@ -138,9 +138,6 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
         }
 
         remove_mdd_traj(lns, a);
-
-        lns.start_locs[a] = lns.env->curr_states.at(a).location;
-
         update_traj(lns, a);
         
     }
@@ -180,7 +177,6 @@ void update_traj(TrajLNS& lns, int i){
     int start = lns.env->curr_states[i].location;
     int goal = lns.tasks[i];
 
-    assert(start == lns.start_locs[i]);
 
 
     // mdd and add_mdd_traj
