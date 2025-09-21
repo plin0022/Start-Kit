@@ -87,7 +87,9 @@ namespace DefaultPlanner{
         TimePoint start_time = std::chrono::steady_clock::now();
 
         //cap the time for distance to goal heuristic table initialisation to half of the given time_limit;
-        int pibt_time = PIBT_RUNTIME_PER_100_AGENTS * env->num_of_agents/100;
+//        int pibt_time = PIBT_RUNTIME_PER_100_AGENTS * env->num_of_agents/100;
+
+        int pibt_time = (PIBT_RUNTIME_PER_100_AGENTS + 8) * env->num_of_agents/100 + 20;
 
 //        if (env->num_of_agents <= 6000)
 //            pibt_time = pibt_time + 330;
