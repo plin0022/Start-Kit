@@ -89,8 +89,24 @@ namespace DefaultPlanner{
         //cap the time for distance to goal heuristic table initialisation to half of the given time_limit;
 //        int pibt_time = PIBT_RUNTIME_PER_100_AGENTS * env->num_of_agents/100;
 
-        int pibt_time = (PIBT_RUNTIME_PER_100_AGENTS + 8) * env->num_of_agents/100 + 20;
+        int pibt_time = PIBT_RUNTIME_PER_100_AGENTS * env->num_of_agents/100;
 
+        if (env->num_of_agents == 500)
+        {
+            pibt_time = pibt_time + 140;
+        }
+        else if (env->num_of_agents == 1000)
+        {
+            pibt_time = pibt_time + 270;
+        }
+        else if (env->num_of_agents == 1500)
+        {
+            pibt_time = pibt_time + 270;
+        }
+        else
+        {
+            pibt_time = pibt_time + 280;
+        }
 //        if (env->num_of_agents <= 6000)
 //            pibt_time = pibt_time + 330;
 //        else
