@@ -138,6 +138,13 @@ void frank_wolfe(TrajLNS& lns,std::unordered_set<int>& updated, TimePoint timeli
         }
 
         remove_mdd_traj(lns, a);
+
+        // initialize the goal node
+        lns.start_locs[a] = lns.env->curr_states.at(a).location;
+        lns.goal_heuristics[lns.tasks.at(a)].reset();
+        init_goal_heuristic(lns.goal_heuristics[lns.tasks.at(a)], lns.env, lns.tasks[a]);
+        lns.heu_cur_at[a] = lns.tasks[a];
+
         update_traj(lns, a);
         
     }
