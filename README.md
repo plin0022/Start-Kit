@@ -62,7 +62,7 @@ map_prefix, simulation_time = 'sortation_small', '500'
 # map_prefix, simulation_time = 'warehouse_large', '3200'
 
 
-# The preprocess time
+# The preprocess time (this is not included in the runtime. However, when there are more than 10,000 agents, initializing space for all agents may exceed system limits and cause the program to stop.)
 preprocess_time_limit = '100000'
 
 
