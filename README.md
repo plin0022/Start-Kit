@@ -30,7 +30,7 @@ more info on help:
 ./build/lifelong --help
 ```
 
-### An example of script for running experiments
+### An example script for running experiments
 ```shell
 import subprocess
 import os
