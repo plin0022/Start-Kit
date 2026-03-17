@@ -6,6 +6,10 @@ The repository contains the implementation of the paper: Peiqian Lin, Zhe Chen, 
 ## PTFO
 This branch is the implementation of PTFO. In this setting, we set S = A and impose no time limit on each timestep. In other words, all agents update their OCPGs and contribute traffic flows to the overall traffic flow at each timestep. We also set Refine=false, which means that RefineGuidePaths() is not executed.
 
+## Other versions
+PTFO_S: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_shared_no_fw
+
+
 ### Compiling
 Using cmake: 
 ```shell
