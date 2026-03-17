@@ -17,12 +17,12 @@ make -C build -j
 ### Run the start kit
 Running the start-kit using commands: 
 ```shell
-./build/lifelong --inputFile the_input_file_name -o output_file_location
+./build/lifelong --inputFile the_input_file_name --simulationTime maximum_timesteps --preprocessTimeLimit preprocess_timelimit --planTimeLimit timelimit_per_timestep -o output_file_location
 ```
 
 for example:
 ```shell
-./build/lifelong --inputFile ./example_problems/random.domain/random_32_32_20_100.json -o test.json
+./build/lifelong --inputFile ./example_problems/benchmark-lifelong/sortation_small_0_800.json --simulationTime 500 --preprocessTimeLimit 100000 --planTimeLimit 1000 -o test.json
 ```
 
 more info on help:
@@ -33,7 +33,7 @@ more info on help:
 ## Notes
 You might need the following contents since our work is based on the start-kit
 
-## ---------------------------------------------------------
+## ---------------------------------------------------------    
 
 ## Join the competition
 
