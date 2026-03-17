@@ -3,6 +3,20 @@
 ## Flexibility-Based Traffic Flow Optimisation in Lifelong Multi-Agent Path Finding
 The repository contains the implementation of the paper: Peiqian Lin, Zhe Chen, David L. Dowe, Daniel Harabor, Flexibility-Based Traffic Flow Optimisation in Lifelong Multi-Agent Path Finding. The paper was accepted for publication at AAMAS 2026.
 
+## PTFO
+This branch is the implementation of PTFO. We do not have paths refinement in this version. The flow table will only be updated when a task is finished.
+
+### Compiling
+Using cmake: 
+```shell
+mkdir build
+cmake -B build ./ -DCMAKE_BUILD_TYPE=Release
+make -C build -j
+```
+
+### Run the start kit
+
+
 
 ## Join the competition
 
