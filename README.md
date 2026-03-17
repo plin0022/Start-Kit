@@ -1,6 +1,8 @@
 # Start-Kit
 
 ## Flexibility-Based Traffic Flow Optimisation in Lifelong Multi-Agent Path Finding
+The repository contains the implementation of the paper: Peiqian Lin, Zhe Chen, David L. Dowe, Daniel Harabor, Flexibility-Based Traffic Flow Optimisation in Lifelong Multi-Agent Path Finding. The paper was accepted for publication at AAMAS 2026.
+
 
 ## Join the competition
 
