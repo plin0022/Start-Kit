@@ -4,7 +4,7 @@
 The repository contains the implementation of the paper: Peiqian Lin, Zhe Chen, David L. Dowe, Daniel Harabor, Flexibility-Based Traffic Flow Optimisation in Lifelong Multi-Agent Path Finding. The paper was accepted for publication at AAMAS 2026. https://doi.org/10.65109/IRBO1733
 
 ## PTFO
-This branch is the implementation of PTFO. We do not have paths refinement in this version. The flow table will only be updated when a task is finished.
+This branch is the implementation of PTFO. In this setting, we set S = A and impose no time limit on each timestep. In other words, all agents update their OCPGs and contribute traffic flows to the overall traffic flow at each timestep. We also set Refine=false, which means that RefineGuidePaths() is not executed.
 
 ### Compiling
 Using cmake: 
@@ -68,7 +68,7 @@ map_prefix, simulation_time = 'sortation_small', '500'
 preprocess_time_limit = '100000'
 
 
-# The plan time limit
+# The plan time limit (no time limit for each step in PTFO)
 plan_time_limit = '1000'
 
 
