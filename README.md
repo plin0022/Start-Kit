@@ -105,7 +105,7 @@ for input_file in os.listdir(input_dir):
 ```
 
 ## Notes
-You might need the following contents since our work is based on the start-kit
+You might need the following content since our work is based on the start-kit
 
 ## ---------------------------------------------------------    
 
