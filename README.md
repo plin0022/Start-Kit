@@ -15,8 +15,25 @@ make -C build -j
 ```
 
 ### Run the start kit
+Running the start-kit using commands: 
+```shell
+./build/lifelong --inputFile the_input_file_name -o output_file_location
+```
 
+for example:
+```shell
+./build/lifelong --inputFile ./example_problems/random.domain/random_32_32_20_100.json -o test.json
+```
 
+more info on help:
+```shell
+./build/lifelong --help
+```
+
+## Notes
+You might need the following contents since our work is based on the start-kit
+
+## ---------------------------------------------------------
 
 ## Join the competition
 
