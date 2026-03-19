@@ -16,6 +16,7 @@ PFTO_Sa_30: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_fl
 PFTO_Sa_30_Re:https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_sampling
 
 TFO or TFO_Re: https://github.com/plin0022/Start-Kit/tree/traffic_paper_testing
+(For this version, go to Start-Kit/default_planner/planner.cpp, lines 177-179, if you comment these lines out, then you have TFO. If you enable them, then you have TFO_Re.)
 
 PIBT: https://github.com/plin0022/Start-Kit/tree/pibt_testing
 
