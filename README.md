@@ -10,13 +10,16 @@ This branch is the implementation of PTFO. In this setting, we set S = A and imp
 PTFO_S: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_shared_no_fw
 
 PTFO_S_Re or PTFO_S_Re_Init: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_shared
+- Go to 'Start-Kit/default_planner/flow.cpp', lines 142-146
+- Comment out → PTFO_S_Re
+- Enable → PTFO_S_Re_Init
 
 PFTO_Sa_30: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_sampling_no_fw
 
 PFTO_Sa_30_Re:https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_sampling
 
 TFO or TFO_Re: https://github.com/plin0022/Start-Kit/tree/traffic_paper_testing
-- For this version, go to 'Start-Kit/default_planner/planner.cpp', lines 177–179
+- Go to 'Start-Kit/default_planner/planner.cpp', lines 177–179
 - Comment out → TFO  
 - Enable → TFO_Re
 
