@@ -9,6 +9,15 @@ This branch is the implementation of PTFO. In this setting, we set S = A and imp
 ## Other versions
 PTFO_S: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_shared_no_fw
 
+PTFO_S_Re or PTFO_S_Re_Init: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_shared
+
+PFTO_Sa_30: https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_sampling_no_fw
+
+PFTO_Sa_30_Re:https://github.com/plin0022/Start-Kit/tree/traffic_heuristics_mdd_float_sampling
+
+TFO or TFO_Re: https://github.com/plin0022/Start-Kit/tree/traffic_paper_testing
+
+PIBT: https://github.com/plin0022/Start-Kit/tree/pibt_testing
 
 ### Compiling
 Using cmake: 
